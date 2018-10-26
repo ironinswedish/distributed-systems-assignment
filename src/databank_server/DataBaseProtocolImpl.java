@@ -57,7 +57,6 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         System.out.println(username + " password: "+password);
         String query = "SELECT * FROM users WHERE login ='"+username+"'" ;
         try {
-            setupConnection();
             System.out.println(st);
             ResultSet rs = st.executeQuery((query));
             if (rs.isBeforeFirst()) {
