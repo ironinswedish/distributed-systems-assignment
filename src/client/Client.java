@@ -60,10 +60,15 @@ public class Client extends Application {
         primaryStage.show();
     }
 
+    public String hashPassword(String password) {
+        // hashfunctie
+        return password;
+    }
     public void login(){
         try {
             System.out.println("Username: " + username.getText() + " Password: " + password.getText());
-            System.out.println(application.login(username.getText(), password.getText()));
+            String hashedPassword = hashPassword(password.getText());
+            System.out.println(application.login(username.getText(), hashedPassword));
 
         } catch (RemoteException e) {
             e.printStackTrace();

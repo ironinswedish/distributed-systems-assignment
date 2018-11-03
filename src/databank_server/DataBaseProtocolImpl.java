@@ -55,12 +55,16 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     @Override
     public String login(String username, String password) throws RemoteException {
         System.out.println(username + " password: "+password);
-        String query = "SELECT * FROM users WHERE login ='"+username+"'" ;
+        String query = "SELECT paswoord,token FROM users WHERE login ='"+username+"'" ;
         try {
             System.out.println(st);
             ResultSet rs = st.executeQuery((query));
             if (rs.isBeforeFirst()) {
                 if (rs.getString("paswoord").equals(password)) {
+                    if (rs.getString("token") == null) {
+                        generateKey(username);
+                    }
+                    registerUser("bert", "pikmin");
                     return "ok";
                 } else {
                     return "incorrect";
@@ -72,4 +76,48 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return "query failed";
     }
 
+    public void generateKey(String username) throws SQLException{
+        String key = "12345";
+        String upd = "UPDATE users SET token = ? WHERE login = ? ";
+
+            PreparedStatement prst = conn.prepareStatement(upd);
+            prst.setString(1, key);
+            prst.setString(2, username);
+            prst.executeUpdate();
+    }
+
+    //register een user nog niet geimplementeerd in client en applicatiezijde
+    @Override
+    public String registerUser(String username,String hashedPassword){
+        String ins = "INSERT INTO users(login,paswoord) VALUES(?,?)";
+        if (checkUser(username)) {
+            try {
+                PreparedStatement prst = conn.prepareStatement(ins);
+                prst.setString(1, username);
+                prst.setString(2, hashedPassword);
+
+                prst.executeUpdate();
+                generateKey(username);
+                return "ok";
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                return "failed";
+
+            }
+        }else{
+            return "user exists";
+        }
+    }
+
+    //returns true indien user niet bestaat
+    public boolean checkUser(String username) {
+        String query = "SELECT login FROM users WHERE login ='" + username + "'";
+        try{
+            ResultSet rs = st.executeQuery((query));
+            return !rs.isBeforeFirst();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
