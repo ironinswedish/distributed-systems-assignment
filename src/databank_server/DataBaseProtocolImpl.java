@@ -54,7 +54,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     @Override
     public String login(String username, String password) throws RemoteException {
-        System.out.println(username + " password kilk: "+password);
+        System.out.println(username + " password: "+password);
         String query = "SELECT paswoord,token FROM users WHERE login ='"+username+"'" ;
         try {
             System.out.println(st);
