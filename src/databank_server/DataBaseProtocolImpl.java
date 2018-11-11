@@ -5,6 +5,8 @@ import Interfaces.DataBaseProtocol;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBaseProtocol {
 
@@ -12,9 +14,75 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     static Statement st;
 
 
-    public DataBaseProtocolImpl() throws RemoteException {setupConnection();}
+    public DataBaseProtocolImpl() throws RemoteException {
+        setupConnection();
 
-    public void setupConnection(){
+        //codevoorbeeld voor periodieke taak uit te voeren zoals updaten database
+
+        String query = "SELECT userid, token, sessiontime FROM users";
+        Timer timer = new Timer();
+
+        timer.schedule(new TimerTask() {
+            public void run() {
+                try {
+                    ResultSet rs;
+                    rs = st.executeQuery((query));
+                    while (rs.next()) {
+                        if (rs.getString("token") != null) {
+                            if (rs.getInt("sessiontime") + 1 == 24) {
+                                resetToken(rs.getInt("userid"));
+                            } else {
+                                incrementSession(rs.getInt("userid"), rs.getInt("sessiontime"));
+                            }
+                        }
+
+                        System.out.println(rs.getInt("userid") + "token: " + rs.getString("token") + "sessiontime:  " + rs.getString("sessiontime"));
+
+                    }
+
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 1000);
+        //500 -> 0.5s
+        //3600000 -> 1 uur
+
+    }
+
+    private void resetToken(int userid) throws SQLException {
+        String upd = "UPDATE users SET token = ?,sessiontime = ? WHERE userid = ? ";
+
+        PreparedStatement prst = conn.prepareStatement(upd);
+        prst.setString(1, null);
+        prst.setInt(2, -1);
+        prst.setInt(3, userid);
+        prst.executeUpdate();
+        setOffline(userid);
+    }
+
+    private void setOffline(int userid) throws SQLException {
+        String upd = "UPDATE users SET loggedin = ? WHERE userid = ? ";
+        PreparedStatement prst = conn.prepareStatement(upd);
+        prst.setBoolean(1, false);
+
+
+
+        prst.setInt(2, userid);
+        prst.executeUpdate();
+
+    }
+    private void incrementSession(int userid, int time) throws SQLException {
+        String upd = "UPDATE users SET sessiontime = ? WHERE userid = ? ";
+
+        PreparedStatement prst = conn.prepareStatement(upd);
+        prst.setInt(1, time + 1);
+        prst.setInt(2, userid);
+        prst.executeUpdate();
+    }
+
+    private void setupConnection() {
         conn = null;
         try {
             //url (pad) naar .sqlite database
@@ -29,11 +97,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
-    public static String getUsers(){
+    //wordt (nog) niet gebruikt
+    private static String getUsers() {
         String query = "SELECT * FROM users";
         try {
             ResultSet rs = st.executeQuery((query));
-            return rs.getInt("userid")+"name: " + rs.getString("login") + "pasword: " + rs.getString("paswoord");
+            return rs.getInt("userid") + "name: " + rs.getString("login") + "pasword: " + rs.getString("paswoord");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -41,8 +110,8 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
-
-    public static void end(){
+    //wordt (nog) niet gebruikt -> veilig afsluiten databaseserver
+    private static void end() {
         try {
             if (conn != null) {
                 conn.close();
@@ -53,71 +122,137 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
     @Override
-    public String login(String username, String password) throws RemoteException {
-        System.out.println(username + " password: "+password);
-        String query = "SELECT paswoord,token FROM users WHERE login ='"+username+"'" ;
+    public String[] login(String username, String password, String session) throws RemoteException {
+        String[] result = new String[2];
+        result[0] = "";
+        result[1] = "";
+
+        System.out.println(username + " password: " + password);
+        String query = "SELECT paswoord,token,loggedin FROM users WHERE login ='" + username + "'";
         try {
             System.out.println(st);
             ResultSet rs = st.executeQuery((query));
             if (rs.isBeforeFirst()) {
-                if (rs.getString("paswoord").equals(password)) {
-                    if (rs.getString("token") == null) {
-                        generateKey(username);
+                if (!rs.getBoolean("loggedin")) {
+                    if (rs.getString("token") != null && rs.getString("token").equals(session)) {
+
+                        result[0] = "ok";
+
+                        result[1] = session;
+                    } else {
+                        if (rs.getString("paswoord").equals(password)) {
+                            if (rs.getString("token") == null) {
+                                result[1] = generateKey(username);
+                                session = result[1];
+                            }
+                            result[0] = "ok";
+
+                            return result;
+                        } else {
+                            result[0] = "incorrect";
+                            return result;
+                        }
                     }
-                    registerUser("bert", "pikmin");
-                    return "ok";
+
+
                 } else {
-                    return "incorrect";
+                    result[0] = "user allready online";
+                    return result;
                 }
-            } else return "username does not exist";
+            } else {
+                result[0] = "username does not exist";
+                return result;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "query failed";
+        result[0] = "query failed";
+        return result;
     }
 
-    public void generateKey(String username) throws SQLException{
+    private String generateKey(String username) throws SQLException {
         String key = "12345";
-        String upd = "UPDATE users SET token = ? WHERE login = ? ";
+        String upd = "UPDATE users SET token = ?,sessiontime = ? WHERE login = ? ";
 
-            PreparedStatement prst = conn.prepareStatement(upd);
-            prst.setString(1, key);
-            prst.setString(2, username);
-            prst.executeUpdate();
+        PreparedStatement prst = conn.prepareStatement(upd);
+        prst.setString(1, key);
+        prst.setInt(2, 0);
+        prst.setString(3, username);
+        prst.executeUpdate();
+
+        setUserOnline(key);
+        return key;
     }
 
-    //register een user nog niet geimplementeerd in client en applicatiezijde
+    private void setUserOnline(String session) throws SQLException {
+        String upd = "UPDATE users SET loggedin = ? WHERE token = ? ";
+
+        PreparedStatement prst = conn.prepareStatement(upd);
+        prst.setBoolean(1, true);
+        prst.setString(2,session);
+        prst.executeUpdate();
+    }
+
     @Override
-    public String registerUser(String username,String hashedPassword){
-        String ins = "INSERT INTO users(login,paswoord) VALUES(?,?)";
+    public String[] registerUser(String username, String hashedPassword) {
+        String[] result = new String[2];
+        result[0] = "";
+        result[1] = "";
+
+        String ins = "INSERT INTO users(login,paswoord,loggedin,) VALUES(?,?,?)";
         if (checkUser(username)) {
             try {
                 PreparedStatement prst = conn.prepareStatement(ins);
                 prst.setString(1, username);
                 prst.setString(2, hashedPassword);
+                prst.setBoolean(3, true);
+
 
                 prst.executeUpdate();
-                generateKey(username);
-                return "ok";
+                result[1] = generateKey(username);
+                result[0] = "ok";
+                return result;
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                return "failed";
+                result[0] = "failed";
+                return result;
 
             }
-        }else{
-            return "user exists";
+        } else {
+            result[0] = "user exists";
+            return result;
+        }
+    }
+
+    @Override
+    public void logout(String session, boolean xButton) throws RemoteException {
+        System.out.println("user logged out");
+        String query = "SELECT userid FROM users WHERE token ='" + session + "'";
+        ResultSet rs;
+        try {
+            rs = st.executeQuery((query));
+            if (xButton) {
+                setOffline(rs.getInt("userid"));
+            } else {
+                resetToken(rs.getInt("userid"));
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     //returns true indien user niet bestaat
-    public boolean checkUser(String username) {
+    private boolean checkUser(String username) {
         String query = "SELECT login FROM users WHERE login ='" + username + "'";
-        try{
+        try {
             ResultSet rs = st.executeQuery((query));
             return !rs.isBeforeFirst();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 }

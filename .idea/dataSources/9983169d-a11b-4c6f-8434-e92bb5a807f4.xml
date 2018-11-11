@@ -176,7 +176,15 @@
       <Position>4</Position>
       <DataType>STRING|0s</DataType>
     </column>
-    <key id="47" parent="12">
+    <column id="47" parent="12" name="sessiontime">
+      <Position>5</Position>
+      <DataType>int|0s</DataType>
+    </column>
+    <column id="48" parent="12" name="loggedin">
+      <Position>6</Position>
+      <DataType>boolean|0s</DataType>
+    </column>
+    <key id="49" parent="12">
       <ColNames>userid</ColNames>
       <Primary>1</Primary>
     </key>

@@ -6,10 +6,15 @@ import java.rmi.registry.Registry;
 
 public class ApplicationServer {
 
+
+
     public static void start() {
         try {
             Registry registry = LocateRegistry.createRegistry(1399);
-            registry.rebind("applicationService", new ApplicationProtocolImpl());
+
+            //voor distributed communicatie
+            registry.rebind("multipleAppService", new MultipleAppProtocolImpl());
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }

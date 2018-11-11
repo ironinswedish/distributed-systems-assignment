@@ -33,8 +33,20 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
     @Override
-    public String login(String username, String password) throws RemoteException {
+    public void logout(String session, boolean xButton) throws RemoteException {
+        System.out.println("user logged out");
+        dataTransfer.logout(session,xButton);
+    }
+
+    @Override
+    public String[] login(String username, String password, String session) throws RemoteException {
         System.out.println("username: " + username + "password: " + password);
-        return dataTransfer.login(username,password);
+        return dataTransfer.login(username,password,session);
+    }
+
+    @Override
+    public String[] register(String username, String password) throws RemoteException {
+        System.out.println("username: " + username + "password: " + password);
+        return dataTransfer.registerUser(username,password);
     }
 }

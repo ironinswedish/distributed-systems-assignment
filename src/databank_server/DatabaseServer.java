@@ -7,7 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.*;
 
-public class database_server {
+public class DatabaseServer {
 
 
     public static void start() {

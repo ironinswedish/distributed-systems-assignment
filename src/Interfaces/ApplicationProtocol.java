@@ -5,5 +5,9 @@ import java.rmi.RemoteException;
 
 public interface ApplicationProtocol extends Remote {
 
-    public String login(String username, String password) throws RemoteException;
+    public String[] login(String username, String password, String session) throws RemoteException;
+
+    public String[] register(String username, String password) throws RemoteException;
+
+    public void logout(String session,boolean xButton) throws RemoteException;
 }
