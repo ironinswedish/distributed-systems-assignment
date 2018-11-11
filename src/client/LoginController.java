@@ -53,6 +53,10 @@ public class LoginController {
         this.session = session;
     }
 
+    public String getSession() {
+        return this.session;
+    }
+
 
 
 

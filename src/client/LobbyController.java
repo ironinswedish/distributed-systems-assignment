@@ -36,6 +36,10 @@ public class LobbyController {
         this.session = session;
     }
 
+    public String getSession() {
+        return this.session;
+    }
+
     public static void setDispatcher(DispatchProtocol dispatch) {
         LobbyController.dispatch = dispatch;
     }

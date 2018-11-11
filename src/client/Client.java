@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sun.rmi.runtime.Log;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -69,9 +70,10 @@ public class Client extends Application {
         FXMLLoader loader;
         AnchorPane pane;
         String result = inSession();
-
+        System.out.println(result);
         if (!result.equals("exit")) {
-            if (result.equals("Lobby")) {
+            if (result.equals("lobby")) {
+                System.out.println("entering lobby");
                 loader = new FXMLLoader(getClass().getResource("Lobby.fxml"));
                 pane = loader.load();
                 LobbyController lobbyController = loader.getController();
@@ -79,7 +81,6 @@ public class Client extends Application {
                 lobbyController.setDispatcher(dispatch);
                 lobbyController.setSession(session);
                 lobbyController.setStatus(status);
-
                 primaryStage.setTitle("lobby");
             } else {
                 loader = new FXMLLoader(getClass().getResource("Login.fxml"));
@@ -101,14 +102,19 @@ public class Client extends Application {
             primaryStage.show();
             primaryStage.setOnCloseRequest(e -> {
                 try {
-                    application.logout(session, true);
+
                     dispatch.logout();
                     System.out.println(primaryStage.getTitle());
+
                     if (!primaryStage.getTitle().equals("login")) {
-                        application.logout(session,false);
                         //dispatch.logout();
                         String[] sessioninfo = LobbyController.readFromFile();
                         LoginController.writeToFile(sessioninfo[0],sessioninfo[1], 0);
+                        application.logout(sessioninfo[1],true);
+                    } else{
+
+                        String[] sessioninfo = LobbyController.readFromFile();
+                        application.logout(session, false);
                     }
                 } catch (RemoteException e1) {
                     e1.printStackTrace();
@@ -133,17 +139,23 @@ public class Client extends Application {
             return "login";
         } else {
             String[] result = application.login(username, "", session);
+
             session = result[1];
+            System.out.println(session);
+            System.out.println(result[0]);
             if (result[0].equals("ok")) {
+                System.out.println("returning lobby");
                 return "lobby";
-            } else if (result[1].equals("user allready online")) {
+            } else if (result[0].equals("user allready online")) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error message");
                 alert.setHeaderText(null);
                 alert.setContentText("user allready online");
                 alert.showAndWait();
+                return "exit";
+            } else {
+                return "login";
             }
-            return "login";
         }
 
     }
@@ -159,10 +171,9 @@ public class Client extends Application {
             if (line != null) {
                 String[] userinfo = line.split(" ");
                 username = userinfo[0];
-                if (userinfo.length == 3) {
-                    session = userinfo[1];
-                    return userinfo[2];
-                }
+                session = userinfo[1];
+                return userinfo[2];
+
             } else {
                 username = "";
                 session = "";

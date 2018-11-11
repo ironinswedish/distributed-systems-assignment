@@ -31,6 +31,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
                         if (rs.getString("token") != null) {
                             if (rs.getInt("sessiontime") + 1 == 24) {
                                 resetToken(rs.getInt("userid"));
+                                setOffline(rs.getInt("userid"));
                             } else {
                                 incrementSession(rs.getInt("userid"), rs.getInt("sessiontime"));
                             }
@@ -59,15 +60,13 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         prst.setInt(2, -1);
         prst.setInt(3, userid);
         prst.executeUpdate();
-        setOffline(userid);
+
     }
 
     private void setOffline(int userid) throws SQLException {
         String upd = "UPDATE users SET loggedin = ? WHERE userid = ? ";
         PreparedStatement prst = conn.prepareStatement(upd);
         prst.setBoolean(1, false);
-
-
 
         prst.setInt(2, userid);
         prst.executeUpdate();
@@ -130,15 +129,17 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         System.out.println(username + " password: " + password);
         String query = "SELECT paswoord,token,loggedin FROM users WHERE login ='" + username + "'";
         try {
-            System.out.println(st);
+
             ResultSet rs = st.executeQuery((query));
             if (rs.isBeforeFirst()) {
                 if (!rs.getBoolean("loggedin")) {
                     if (rs.getString("token") != null && rs.getString("token").equals(session)) {
-
+                        System.out.println("heyo");
                         result[0] = "ok";
 
                         result[1] = session;
+                        setUserOnline(session);
+                        return result;
                     } else {
                         if (rs.getString("paswoord").equals(password)) {
                             if (rs.getString("token") == null) {
@@ -227,14 +228,19 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     @Override
     public void logout(String session, boolean xButton) throws RemoteException {
         System.out.println("user logged out");
+        System.out.println(xButton);
+        System.out.println(session);
         String query = "SELECT userid FROM users WHERE token ='" + session + "'";
-        ResultSet rs;
+
         try {
-            rs = st.executeQuery((query));
+
             if (xButton) {
+                ResultSet rs = st.executeQuery(query);
                 setOffline(rs.getInt("userid"));
             } else {
+                ResultSet rs = st.executeQuery(query);
                 resetToken(rs.getInt("userid"));
+                setOffline(rs.getInt("userid"));
             }
 
 
