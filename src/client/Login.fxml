@@ -10,9 +10,9 @@
    <children>
       <TextField fx:id="username" layoutX="226.0" layoutY="80.0" promptText="Username" AnchorPane.leftAnchor="226.0" AnchorPane.topAnchor="80.0" />
       <PasswordField fx:id="password" layoutX="226.0" layoutY="134.0" promptText="Password" AnchorPane.leftAnchor="226.0" AnchorPane.topAnchor="134.0" />
-      <Button fx:id="loginKnop" layoutX="275.0" layoutY="188.0" mnemonicParsing="false" onAction="#login" prefHeight="31.0" prefWidth="54.0" text="login" AnchorPane.leftAnchor="275.0" AnchorPane.topAnchor="188.0" />
-      <Button fx:id="quitKnop" layoutX="275.0" layoutY="282.0" mnemonicParsing="false" onAction="#quit" prefHeight="31.0" prefWidth="54.0" text="quit" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="275.0" />
-      <Button fx:id="registerKnop" layoutX="272.0" layoutY="231.0" mnemonicParsing="false" onAction="#register" prefHeight="31.0" text="register" AnchorPane.bottomAnchor="135.0" AnchorPane.leftAnchor="275.0" />
+      <Button fx:id="loginKnop" layoutX="275.0" layoutY="188.0" mnemonicParsing="false" onAction="#login" text="Login" wrapText="true" AnchorPane.leftAnchor="275.0" AnchorPane.topAnchor="188.0" />
+      <Button fx:id="quitKnop" layoutX="275.0" layoutY="282.0" mnemonicParsing="false" onAction="#quit" text="Quit" wrapText="true" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="275.0" />
+      <Button fx:id="registerKnop" layoutX="272.0" layoutY="231.0" mnemonicParsing="false" onAction="#register" text="Register" wrapText="true" AnchorPane.bottomAnchor="135.0" AnchorPane.leftAnchor="275.0" />
       <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="${status}" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="6.0" />
    </children>
 </AnchorPane>

@@ -9,5 +9,5 @@ public interface DataBaseProtocol extends Remote {
 
     public String[] registerUser(String username, String password) throws RemoteException;
 
-    public void logout(String session,boolean xButton) throws RemoteException;
+    public void logout(String login, String session,boolean xButton) throws RemoteException;
 }

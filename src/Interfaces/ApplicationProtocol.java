@@ -9,5 +9,7 @@ public interface ApplicationProtocol extends Remote {
 
     public String[] register(String username, String password) throws RemoteException;
 
-    public void logout(String session,boolean xButton) throws RemoteException;
+    public void logout(String login, String session,boolean xButton) throws RemoteException;
+
+    public String respond() throws RemoteException;
 }

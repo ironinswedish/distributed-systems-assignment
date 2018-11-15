@@ -9,79 +9,21 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
-public class LobbyController {
-
-    private ApplicationProtocol application;
-    private static DispatchProtocol dispatch;
-    private String session;
-    private String status;
+public class LobbyController extends Controller{
 
     @FXML
     private Button quitButton;
 
+    @FXML
+    private Button playButton;
 
-    public void setApplication(ApplicationProtocol application) {
-        this.application = application;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setSession(String session) {
-        this.session = session;
-    }
-
-    public String getSession() {
-        return this.session;
-    }
-
-    public static void setDispatcher(DispatchProtocol dispatch) {
-        LobbyController.dispatch = dispatch;
-    }
-
-
-    public static String[] readFromFile() {
-        BufferedReader br;
-        String[] userinfo = new String[3];
-
-        try {
-            br = new BufferedReader(new FileReader("session.txt"));
-
-            String line = br.readLine();
-
-            System.out.println(line);
-            if (line != null) {
-                userinfo = line.split(" ");
-            }
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return userinfo;
-    }
-    public void logOut(){
+    public void PlayMenu() {
         try {
 
-            application.logout(session,false);
-            //dispatch.logout();
-            String[] result = readFromFile();
-            LoginController.writeToFile(result[0],result[1], 0);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-            AnchorPane pane = loader.load();
-            loader.getNamespace().put("status", status);
-
-            LoginController loginController = loader.getController();
-            loginController.setApplication(application);
-            loginController.setStatus(status);
-            loginController.setSession(session);
-            loginController.setDispatcher(dispatch);
+            AnchorPane pane = getTransition("PlaySelect.fxml");
 
             Stage stage = (Stage) quitButton.getScene().getWindow();
             Scene scene = new Scene(pane);
@@ -91,7 +33,43 @@ public class LobbyController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void logOut() {
+        try {
+
+            application.logout(login, session, false);
+            //dispatch.logout();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+            AnchorPane pane = loader.load();
+            loader.getNamespace().put("status", status);
+
+            Controller loginController = loader.getController();
+            loginController.setApplication(application);
+            loginController.setStatus(status);
+            loginController.setSession(session);
+            loginController.setDispatcher(dispatch);
+            loginController.setStage(stage);
+
+            Stage stage = (Stage) quitButton.getScene().getWindow();
+            Scene scene = new Scene(pane);
+            stage.setOnCloseRequest(e -> {
+                try {
+
+                    dispatch.logout();
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            stage.setScene(scene);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
+
 
 }

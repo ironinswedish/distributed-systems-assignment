@@ -33,9 +33,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
     @Override
-    public void logout(String session, boolean xButton) throws RemoteException {
+    public void logout(String login, String session, boolean xButton) throws RemoteException {
         System.out.println("user logged out");
-        dataTransfer.logout(session,xButton);
+        dataTransfer.logout(login,session,xButton);
+    }
+
+    @Override
+    public String respond() throws RemoteException {
+        return "hello";
     }
 
     @Override

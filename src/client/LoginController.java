@@ -16,12 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class LoginController {
-
-    static ApplicationProtocol application;
-    static DispatchProtocol dispatch;
-    private static String status;
-    private String session;
+public class LoginController extends Controller{
 
     @FXML
     private TextField username;
@@ -36,60 +31,19 @@ public class LoginController {
     @FXML
     private static Label statusLabel;
 
-
-    public void setApplication(ApplicationProtocol application) {
-        this.application = application;
-    }
-
-    public void setDispatcher(DispatchProtocol dispatch) {
-        this.dispatch = dispatch;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setSession(String session) {
-        this.session = session;
-    }
-
-    public String getSession() {
-        return this.session;
-    }
-
-
-
-
     public String hashPassword(String password) {
         // hashfunctie
         return password;
     }
 
-    public static void writeToFile(String username, String session, int online) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(new File("session.txt")));
-            writer.write(username + " " + session+ " "+ String.valueOf(online));
-            System.out.println(username + " " + session+ " "+ online);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void login() {
         try {
             System.out.println("Username: " + username.getText() + " Password: " + password.getText());
+            login = username.getText();
             String hashedPassword = hashPassword(password.getText());
-            String[] result = application.login(username.getText(), hashedPassword,session);
+            String[] result = application.login(login, hashedPassword,session);
             session = result[1];
             if (result[0].equals("ok")) {
-                writeToFile(username.getText(), session,1);
                 enterLobby();
             } else {
                 errorMessage(result[0]);
@@ -104,8 +58,9 @@ public class LoginController {
     public void register() {
 
         try {
+            login = username.getText();
             String hashedPassword = hashPassword(password.getText());
-            String[] result = application.register(username.getText(), hashedPassword);
+            String[] result = application.register(login, hashedPassword);
             session = result[1];
             if (result[0].equals("ok")) {
                 enterLobby();
@@ -122,14 +77,29 @@ public class LoginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Lobby.fxml"));
             AnchorPane pane = loader.load();
-            LobbyController lobbyController = loader.getController();
+            Controller lobbyController = loader.getController();
             lobbyController.setApplication(application);
             lobbyController.setDispatcher(dispatch);
             lobbyController.setSession(session);
+            lobbyController.setLogin(login);
             lobbyController.setStatus(status);
+            lobbyController.setStage(stage);
 
-            Stage stage = (Stage) loginKnop.getScene().getWindow();
+            // Stage stage = (Stage) loginKnop.getScene().getWindow();
             stage.setTitle("lobby");
+            stage.setOnCloseRequest( e -> {
+                try {
+                    if (dispatch != null) {
+                        dispatch.logout();
+                    }
+                    if (application != null) {
+                        application.logout(login, session, true);
+                    }
+
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
             Scene scene = new Scene(pane);
             stage.setScene(scene);
 
@@ -151,7 +121,9 @@ public class LoginController {
     public void quit() {
         Stage stage = (Stage) loginKnop.getScene().getWindow();
         try {
-            dispatch.logout();
+            if (dispatch != null) {
+                dispatch.logout();
+            }
         } catch (RemoteException e1) {
             e1.printStackTrace();
         }

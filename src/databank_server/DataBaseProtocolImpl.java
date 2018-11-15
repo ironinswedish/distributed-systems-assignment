@@ -30,8 +30,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
                     while (rs.next()) {
                         if (rs.getString("token") != null) {
                             if (rs.getInt("sessiontime") + 1 == 24) {
+
                                 resetToken(rs.getInt("userid"));
                                 setOffline(rs.getInt("userid"));
+
                             } else {
                                 incrementSession(rs.getInt("userid"), rs.getInt("sessiontime"));
                             }
@@ -72,6 +74,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         prst.executeUpdate();
 
     }
+
     private void incrementSession(int userid, int time) throws SQLException {
         String upd = "UPDATE users SET sessiontime = ? WHERE userid = ? ";
 
@@ -85,7 +88,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         conn = null;
         try {
             //url (pad) naar .sqlite database
-            String url = "jdbc:sqlite://C:/Users/jarne/downloads/memorydb.sqlite";
+            String url = "jdbc:sqlite:memorydb.sqlite";
             conn = DriverManager.getConnection(url);
             System.out.println("Connection to SQLite has been established.");
             st = conn.createStatement();
@@ -190,7 +193,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
         PreparedStatement prst = conn.prepareStatement(upd);
         prst.setBoolean(1, true);
-        prst.setString(2,session);
+        prst.setString(2, session);
         prst.executeUpdate();
     }
 
@@ -226,21 +229,23 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
     @Override
-    public void logout(String session, boolean xButton) throws RemoteException {
+    public void logout(String login, String session, boolean xButton) throws RemoteException {
         System.out.println("user logged out");
         System.out.println(xButton);
         System.out.println(session);
-        String query = "SELECT userid FROM users WHERE token ='" + session + "'";
+        String query = "SELECT userid,token FROM users WHERE login ='" + login + "'";
 
         try {
+            ResultSet rs = st.executeQuery(query);
+            if (rs.getString("token") != null && rs.getString("token").equals(session)) {
+                if (xButton) {
 
-            if (xButton) {
-                ResultSet rs = st.executeQuery(query);
-                setOffline(rs.getInt("userid"));
-            } else {
-                ResultSet rs = st.executeQuery(query);
-                resetToken(rs.getInt("userid"));
-                setOffline(rs.getInt("userid"));
+                    setOffline(rs.getInt("userid"));
+                } else {
+
+                    resetToken(rs.getInt("userid"));
+                    setOffline(rs.getInt("userid"));
+                }
             }
 
 

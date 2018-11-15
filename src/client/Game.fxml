@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.GameController">
+   <children>
+      <SplitPane dividerPositions="0.8592964824120602" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane>
+               <children>
+                  <SplitPane dividerPositions="0.75" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                      <AnchorPane>
+                           <children>
+                              <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columnConstraints>
+                                  <ColumnConstraints />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints />
+                                </rowConstraints>
+                              </GridPane>
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane minHeight="-Infinity" minWidth="-Infinity">
+                           <children>
+                              <Label fx:id="player1" layoutX="33.0" layoutY="49.0" text="player1" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="50.0" />
+                              <Label fx:id="player2" layoutX="33.0" layoutY="110.0" text="player2" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="100.0" />
+                              <Label fx:id="player3" layoutX="33.0" layoutY="169.0" text="player3" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="150.0" />
+                              <Label fx:id="player4" layoutX="33.0" layoutY="228.0" text="player4" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="200.0" />
+                           </children></AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="-Infinity" minWidth="-Infinity">
+               <children>
+                  <Button layoutX="217.0" layoutY="18.0" mnemonicParsing="false" text="quit" wrapText="true" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="10.0" />
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
