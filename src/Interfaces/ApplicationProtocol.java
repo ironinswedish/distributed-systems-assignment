@@ -46,4 +46,8 @@ public interface ApplicationProtocol extends Remote {
     double[] getUserStats(String login) throws RemoteException;
 
     HashMap<String, Integer> getRanking() throws  RemoteException;
+
+    public ArrayList<String> getThemeNames() throws RemoteException;
+
+    ArrayList<Theme> getPreviewThemes() throws RemoteException;
 }

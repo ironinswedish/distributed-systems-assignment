@@ -21,6 +21,11 @@ public class Theme implements Serializable {
         return size;
     }
 
+    public Theme(int themeId, HashMap<String, byte[]> cards) {
+        this.themeId = themeId;
+        this.cardMap = cards;
+    }
+
     public Theme(String themeName, int size, HashMap<String,byte[]> cards){
 
         name=themeName;

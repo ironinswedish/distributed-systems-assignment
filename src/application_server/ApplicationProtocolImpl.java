@@ -85,6 +85,16 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return dataTransfer.getRanking();
     }
 
+    @Override
+    public ArrayList<String> getThemeNames() throws RemoteException {
+        return dataTransfer.getThemeNames();
+    }
+
+    @Override
+    public ArrayList<Theme> getPreviewThemes() throws RemoteException {
+        return dataTransfer.getPreviewThemes();
+    }
+
     //Game logica********************************************************************************************
     @Override
     public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName) throws RemoteException {

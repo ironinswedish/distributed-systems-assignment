@@ -549,8 +549,64 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    @Override
+    public ArrayList<String> getThemeNames() throws RemoteException {
+        String get = "select beschrijving from thema";
+        ResultSet rs;
+        PreparedStatement selectst;
+        ArrayList<String> themeNames = new ArrayList<>();
+        try {
+            selectst = conn.prepareStatement(get);
+            rs = selectst.executeQuery();
+            while (rs.next()) {
+                themeNames.add(rs.getString("beschrijving"));
+            }
+            return themeNames;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-    public Game setId(Game game, String appserver) {
+    @Override
+    public ArrayList<Theme> getPreviewThemes() throws RemoteException {
+        String getId = "SELECT themaid FROM thema";
+        String getThemes = "SELECT number FROM picture WHERE themaid = ? AND picnumber in (0,1,2,3)";
+        ResultSet rs;
+        PreparedStatement prst;
+        ArrayList<Integer> themaIdList = new ArrayList<>();
+        ArrayList<Theme> PreviewThemes = new ArrayList<>();
+        HashMap<String,byte[]> cards;
+        try {
+            prst = conn.prepareStatement(getId);
+            rs = prst.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getInt("themaid"));
+                themaIdList.add(rs.getInt("themaid"));
+            }
+            for (Integer id : themaIdList) {
+                System.out.println(id);
+                cards = new HashMap<>();
+                prst = conn.prepareStatement(getThemes);
+                prst.setInt(1, id);
+                rs = prst.executeQuery();
+                int i = 0;
+                while (rs.next()) {
+                    System.out.println("inside cardgetter");
+                    cards.put(String.valueOf(i),rs.getBytes("number"));
+                    i++;
+                }
+                PreviewThemes.add(new Theme(id, cards));
+            }
+            return PreviewThemes;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private Game setId(Game game, String appserver) {
         String get = "select seq from sqlite_sequence where name = \"spellen\"";
         String upd = "UPDATE spellen SET global_spelid = ? WHERE spelid= ? ";
         ResultSet rs;

@@ -40,4 +40,9 @@ public interface DataBaseProtocol extends Remote {
     public void addWin(String login) throws RemoteException;
 
     public void addDraw(String login) throws RemoteException;
+
+    public ArrayList<String> getThemeNames() throws RemoteException;
+
+    public ArrayList<Theme> getPreviewThemes() throws RemoteException;
+
 }

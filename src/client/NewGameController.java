@@ -25,12 +25,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class NewGameController extends Controller {
 
-    private List<String> themeList;
+    private List<String> themeNames;
+    private HashMap<String, Theme> previewThemes;
 
     @FXML
     private RadioButton playercount1;
@@ -85,7 +87,7 @@ public class NewGameController extends Controller {
         //Game game = new Game(Integer.parseInt(playerTotal),Integer.parseInt(gridTotal), chosenTheme);
 
         try {
-            Game game = application.createGame(Integer.parseInt(playerTotal), login,Integer.parseInt(gridTotal),choiceBox.getValue());
+            Game game = application.createGame(Integer.parseInt(playerTotal), login, Integer.parseInt(gridTotal), choiceBox.getValue());
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Game.fxml"));
 
@@ -102,7 +104,7 @@ public class NewGameController extends Controller {
             controller.setCards();
 
             stage.setTitle("game");
-            stage.setOnCloseRequest( e2 -> {
+            stage.setOnCloseRequest(e2 -> {
 
                 try {
                     controller.quit();
@@ -140,7 +142,23 @@ public class NewGameController extends Controller {
 
         setGroups();
         setChoicebox();
-        setPics("memory_resources/shiba/shibamemory");
+        getThemes();
+
+        setPics(previewThemes.get(themeNames.get(0)));
+    }
+
+    public void getThemes() {
+        previewThemes = new HashMap<String, Theme>();
+        try {
+            ArrayList<Theme> previewThemesList = application.getPreviewThemes();
+            int i = 0;
+            for (Theme theme : previewThemesList) {
+                previewThemes.put(themeNames.get(i), theme);
+                i++;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setGroups() {
@@ -169,8 +187,8 @@ public class NewGameController extends Controller {
 
     public void setChoicebox() {
         updateThemes();
-        choiceBox.setItems(FXCollections.observableArrayList(themeList));
-        choiceBox.setValue(themeList.get(0));
+        choiceBox.setItems(FXCollections.observableArrayList(themeNames));
+        choiceBox.setValue(themeNames.get(0));
         choiceBox.getSelectionModel().selectedIndexProperty().addListener((ChangeListener) (ov, oldSelected, newSelected) -> {
             getPreviewPics(Integer.parseInt(newSelected.toString()));
 
@@ -179,40 +197,36 @@ public class NewGameController extends Controller {
 
     public void updateThemes() {
         System.out.println("updating themes");
-        themeList = new ArrayList<String>();
-        themeList.add("Shiba's");
+        try {
+            themeNames = application.getThemeNames();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        /*themeList.add("Shiba's");
         themeList.add("Star Wars");
-        themeList.add("Pokémon");
+        themeList.add("Pokémon");*/
     }
 
     public void getPreviewPics(int themeNumber) {
-        String theme = themeList.get(themeNumber);
-        if (theme.equals("shiba's")) {
-            setPics("memory_resources/shiba/shibamemory");
-        } else if (theme.equals("star wars")) {
-            setPics("memory_resources/star_wars/star_wars");
-        } else if (theme.equals("pokémon")) {
-            setPics("memory_resources/pokemon/pokemon");
-        }
+        String theme = themeNames.get(themeNumber);
+        setPics(previewThemes.get(theme));
     }
 
-    public void setPics(String path) {
-        try {
-            Image backimage = new Image(new FileInputStream(path + "_backside.jpg"));
-            Image preview1 = new Image(new FileInputStream(path + "1.jpg"));
-            Image preview2 = new Image(new FileInputStream(path + "2.jpg"));
-            Image preview3 = new Image(new FileInputStream(path + "3.jpg"));
+    public void setPics(Theme theme) {
 
-            leftUpperImage.setImage(backimage);
-            leftLowerImage.setImage(preview1);
-            rightLowerImage.setImage(preview2);
-            rightUpperImage.setImage(preview3);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Image backimage = new Image(theme.getImage("0"));
+        Image preview1 = new Image(theme.getImage("1"));
+        Image preview2 = new Image(theme.getImage("2"));
+        Image preview3 = new Image(theme.getImage("3"));
+
+        leftUpperImage.setImage(backimage);
+        leftLowerImage.setImage(preview1);
+        rightLowerImage.setImage(preview2);
+        rightUpperImage.setImage(preview3);
+
     }
 
-    public void back(){
+    public void back() {
         try {
             AnchorPane pane = getTransition("PlaySelect.fxml");
 
