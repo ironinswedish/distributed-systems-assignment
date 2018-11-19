@@ -1,24 +1,34 @@
 package shared_objects;
 
+import Interfaces.ApplicationProtocol;
+
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-public class Theme {
+public class Theme implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     int size;
-    HashMap<String,String> cardMap;
+    HashMap<String,byte[]> cardMap;
+    String name;
 
     public int getSize() {
         return size;
     }
 
-    public Theme(){
-        size = 32;
-        cardMap = new HashMap<>();
-        setCards();
+    public Theme(String themeName, int size, HashMap<String,byte[]> cards){
+
+        name=themeName;
+        this.size = size;
+        cardMap = cards;
+
+        System.out.println(cardMap.size()+ " zoveel kaarten zitten er in de theme met size: "+size);
+
     }
 
-    public void setCards(){
+   /* public void setCards(){
         for (int i = 0; i < size; i++) {
             if (i == 0) {
                 cardMap.put(String.valueOf(i),"memory_resources/pokemon/pokemon"+"_backside.jpg");
@@ -28,9 +38,17 @@ public class Theme {
         for (Map.Entry<String, String> entry : cardMap.entrySet()) {
             System.out.println("key: " + entry.getKey() + " path: "+entry.getValue());
         }
+    }*/
+
+    public byte[] getImage(String id) {
+
+        System.out.println(this.cardMap.size()+ " is grootte van cardmap");
+
+
+        return this.cardMap.get(id);
     }
 
-    public String getImage(String id) {
-        return cardMap.get(id);
+    public HashMap<String,byte[]> getCardMap(){
+        return cardMap;
     }
 }

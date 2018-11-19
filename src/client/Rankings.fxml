@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.RankingsController">
+   <children>
+      <Label fx:id="userLosses" layoutX="351.0" layoutY="29.0" text="${losses}" />
+      <Label layoutX="24.0" layoutY="18.0" text="My statistics:">
+         <font>
+            <Font name="Yu Gothic UI Light" size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="userWins" layoutX="179.0" layoutY="29.0" text="${wins}" />
+      <Label fx:id="userDraws" layoutX="264.0" layoutY="29.0" text="${draws}" />
+      <Label fx:id="userWinPerc" layoutX="443.0" layoutY="29.0" text="${winPerc}" />
+      <Button layoutX="484.0" layoutY="346.0" mnemonicParsing="false" onAction="#backToLobby" text="Back to menu" />
+      <TableView fx:id="table" layoutX="24.0" layoutY="71.0" prefHeight="270.0" prefWidth="556.0">
+        <columns>
+          <TableColumn fx:id="colScore" prefWidth="83.0" sortType="DESCENDING" text="Score" />
+          <TableColumn fx:id="colName" minWidth="0.0" prefWidth="472.0" sortable="false" text="Username" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

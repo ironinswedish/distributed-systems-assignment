@@ -3,12 +3,14 @@ package application_server;
 import Interfaces.ApplicationProtocol;
 import Interfaces.DataBaseProtocol;
 import Interfaces.DispatchProtocol;
+import shared_objects.Theme;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 
 public class ApplicationProtocolImpl extends UnicastRemoteObject implements ApplicationProtocol {
 
@@ -53,5 +55,32 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     public String[] register(String username, String password) throws RemoteException {
         System.out.println("username: " + username + "password: " + password);
         return dataTransfer.registerUser(username,password);
+    }
+
+    @Override
+    public Theme getTheme(String themeName)throws RemoteException{
+        System.out.println("Getting theme");
+        Theme t= dataTransfer.getTheme(themeName);
+        System.out.println(t.getCardMap().size());
+        return t;
+    }
+
+    @Override
+    public int changeUsername(String usernameField, String login)throws RemoteException{
+        return dataTransfer.changeUsername(usernameField,login);
+    }
+
+    public int changePassword(String newPassword, String login) throws RemoteException{
+        return dataTransfer.changePassword(newPassword,login);
+    }
+
+    @Override
+    public double[] getUserStats(String login) throws RemoteException{
+        return  dataTransfer.getUserStats(login);
+    }
+
+    @Override
+    public HashMap<String, Integer> getRanking() throws RemoteException{
+        return dataTransfer.getRanking();
     }
 }

@@ -1,12 +1,12 @@
 package databank_server;
 
 import Interfaces.DataBaseProtocol;
+import shared_objects.Theme;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBaseProtocol {
 
@@ -199,11 +199,15 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     @Override
     public String[] registerUser(String username, String hashedPassword) {
+
+
+
         String[] result = new String[2];
         result[0] = "";
         result[1] = "";
 
-        String ins = "INSERT INTO users(login,paswoord,loggedin,) VALUES(?,?,?)";
+
+        String ins = "INSERT INTO users(login,paswoord,loggedin) VALUES(?,?,?)";
         if (checkUser(username)) {
             try {
                 PreparedStatement prst = conn.prepareStatement(ins);
@@ -264,6 +268,131 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public Theme getTheme(String themeName) throws RemoteException{
+
+        System.out.println("START TO GET THEME: "+themeName);
+        try {
+
+        String query = "SELECT themaid,aantalpics FROM thema WHERE beschrijving ='" + themeName + "'";
+        ResultSet rs = st.executeQuery(query);
+
+        int themeId = rs.getInt("themaid");
+        int size = rs.getInt("aantalpics");
+        System.out.println(themeId+ " is themeid met size: "+ size);
+
+
+        query = "SELECT pictureid,number FROM picture WHERE themaid ='" + themeId + "'";
+        rs = st.executeQuery(query);
+
+        int picId;
+        byte[] picData;
+        HashMap<String,byte[]> cards = new HashMap<>();
+
+        while(rs.next()){
+            //picData=rs.getString("number");
+            picData=rs.getBytes("number");
+
+            picId=rs.getInt("pictureid");
+
+            cards.put(String.valueOf(picId),picData);
+
+        }
+        Theme t = new Theme(themeName,size,cards);
+        return t;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public int changeUsername(String usernameField, String login) throws RemoteException{
+
+        if(!checkUser(usernameField)){
+            return -1;
+        }
+        else{
+            String upd = "UPDATE users SET login = ? WHERE login = ? ";
+            System.out.println(login+ " AND "+usernameField);
+            PreparedStatement prst = null;
+            try {
+                prst = conn.prepareStatement(upd);
+                prst.setString(1, usernameField);
+                prst.setString(2, login);
+                prst.executeUpdate();
+                return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+    }
+
+    @Override
+    public int changePassword(String newPassword, String login) throws RemoteException{
+
+            String upd = "UPDATE users SET paswoord = ? WHERE login = ? ";
+            System.out.println(login+ " AND "+newPassword);
+            PreparedStatement prst = null;
+            try {
+                prst = conn.prepareStatement(upd);
+                prst.setString(1, newPassword);
+                prst.setString(2, login);
+                prst.executeUpdate();
+                return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0;
+
+    }
+
+    public double[] getUserStats(String login) throws RemoteException{
+        String query = "SELECT aantalwins,aantalgelijk,aantalverloren FROM users WHERE login ='" + login + "'";
+        double[] stats = {0,0,0};
+        try {
+            ResultSet rs = st.executeQuery(query);
+            stats[0]=rs.getInt("aantalwins");
+            stats[1]=rs.getInt("aantalgelijk");
+            stats[2]=rs.getInt("aantalverloren");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println(stats[0]+" "+stats[1]+" "+stats[2]);
+        return stats;
+    }
+
+    @Override
+    public HashMap<String, Integer> getRanking(){
+        String query = "SELECT aantalwins,login FROM users";
+        HashMap<String, Integer> ranking = new HashMap<>();
+        int score;
+        String username;
+
+        try {
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){
+            score = rs.getInt("aantalwins");
+            username = rs.getString("login");
+            ranking.put(username,score);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        SortedSet<String> keys = new TreeSet<String>(ranking.keySet());
+        System.out.println("RANKING:");
+        for (String key : keys) {
+            System.out.println("rank: "+key+ " "+ranking.get(key));
+        }
+        return ranking;
     }
 
 }

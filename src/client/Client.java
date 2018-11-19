@@ -60,6 +60,7 @@ public class Client extends Application {
         pane = loader.load();
         loader.getNamespace().put("status", status);
 
+
         LoginController loginController = loader.getController();
         loginController.setApplication(application);
         loginController.setDispatcher(dispatch);

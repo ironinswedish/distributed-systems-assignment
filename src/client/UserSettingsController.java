@@ -1,36 +1,29 @@
 package client;
 
-import Interfaces.ApplicationProtocol;
-import Interfaces.DispatchProtocol;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class LoginController extends Controller{
+public class UserSettingsController extends Controller {
 
     @FXML
-    private TextField username;
+    private TextField usernameField;
+
     @FXML
-    private PasswordField password;
+    private PasswordField passwordField;
+
     @FXML
-    private Button loginKnop;
-    @FXML
-    private Button registerKnop;
-    @FXML
-    private Button quitKnop;
-    @FXML
-    private static Label statusLabel;
-    @FXML
-    private Label messageLabel;
+    private Label infoLabel;
+
 
     public String hashPassword(String password) {
 
@@ -65,50 +58,49 @@ public class LoginController extends Controller{
 
     }
 
-    public void login() {
+    public void changeUsername(){
+        int result = 0;
         try {
-            System.out.println("Username: " + username.getText() + " Password: " + password.getText());
-            login = username.getText();
-            String hashedPassword = hashPassword(password.getText());
-            String[] result = application.login(login, hashedPassword,session);
-            session = result[1];
-            if (result[0].equals("ok")) {
-                enterLobby();
-            } else {
-                errorMessage(result[0]);
-            }
+            result = application.changeUsername(usernameField.getText(),login);
+            System.out.println("Going into change username with: "+usernameField.getText()+ " and  "+login);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        if(result==-1){
+            System.out.println("This username already exists");
+            infoLabel.setText("This username already exists");
+        }
+        else if(result==0){
+            System.out.println("Something went wrong.");
+        }
+        else{
+            login=usernameField.getText();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("UserSettings.fxml"));
+            loader.getNamespace().put("newUsername",login);
+            infoLabel.setText("Name succesfully changed!");
+        }
+    }
 
+    public void changePassword(){
+        int result = 0;
+        try {
+
+            result = application.changePassword(hashPassword(passwordField.getText()),login);
+            System.out.println("Going into change password with: "+passwordField.getText()+ " and  "+login);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-    }
+        if(result==0){
+            System.out.println("Something went wrong.");
+        }
+        else{
 
-    public void register() {
-
-        try {
-            login = username.getText();
-            String hashedPassword = hashPassword(password.getText());
-            String[] result = application.register(login, hashedPassword);
-
-            session = result[1];
-            if (result[0].equals("ok")) {
-                enterLobby();
-            }
-            else if(result[0].equals("user exists")){
-                messageLabel.setText("This user already exists.");
-            }
-            else {
-                errorMessage(result[0]);
-                System.out.println(result[0]);
-                messageLabel.setText("Something went wrong.");
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            infoLabel.setText("Password succesfully changed!");
         }
     }
 
-    public void enterLobby() {
+    public void backToLobby(){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Lobby.fxml"));
             AnchorPane pane = loader.load();
@@ -141,30 +133,6 @@ public class LoginController extends Controller{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-    }
-
-    public void errorMessage(String result) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error message");
-        alert.setHeaderText(null);
-        alert.setContentText(result);
-        alert.showAndWait();
-    }
-
-
-
-    public void quit() {
-        Stage stage = (Stage) loginKnop.getScene().getWindow();
-        try {
-            if (dispatch != null) {
-                dispatch.logout();
-            }
-        } catch (RemoteException e1) {
-            e1.printStackTrace();
-        }
-        stage.close();
     }
 
 }

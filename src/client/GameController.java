@@ -12,8 +12,12 @@ import javafx.scene.layout.RowConstraints;
 import shared_objects.Game;
 import shared_objects.Theme;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static java.lang.Thread.sleep;
 
@@ -38,7 +42,11 @@ public class GameController extends Controller {
     @FXML
     private Label player4;
 
-    public void setCards() throws FileNotFoundException {
+    public void setCards(Theme t) throws IOException {
+
+        System.out.println("size van het thema: "+theme.getSize());
+        theme=t;
+
         String matrixSlot;
 
         imageSize = 85;
@@ -51,7 +59,8 @@ public class GameController extends Controller {
                 final ImageView card;
                 System.out.println(id);
                 if (matrixSlot.charAt(0) == '0') {
-                    card = new ImageView(new Image(new FileInputStream(theme.getImage("0"))));
+
+                    /*card = new ImageView(new Image(new FileInputStream(theme.getImage("22"))));
                     card.setOnMouseClicked(event -> {
                         try {
                             if (gamejudge.turn) {
@@ -84,18 +93,18 @@ public class GameController extends Controller {
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
-                    });
+                    });*/
 
                     System.out.println("first char is 0");
                 } else {
 
 
-                    card = new ImageView(new Image(new FileInputStream(theme.getImage(id))));
+                    //card = new ImageView(new Image(new FileInputStream(theme.getImage(id))));
 
                 }
-                card.setFitHeight(imageSize);
-                card.setFitWidth(imageSize);
-                gridPane.add(card, i, j);
+                //card.setFitHeight(imageSize);
+                //card.setFitWidth(imageSize);
+                //gridPane.add(card, i, j);
             }
 
         }
@@ -166,12 +175,12 @@ public class GameController extends Controller {
         }
 
         public void resetChoices() {
-            try {
+           /* try {
                 card1.setImage(new Image(new FileInputStream(theme.getImage("0"))));
                 card2.setImage(new Image(new FileInputStream(theme.getImage("0"))));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
         public boolean cardSelect(ImageView card){

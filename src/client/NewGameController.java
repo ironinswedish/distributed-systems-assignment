@@ -22,6 +22,7 @@ import shared_objects.Theme;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +67,15 @@ public class NewGameController extends Controller {
         System.out.println(gridSize.getSelectedToggle().getUserData().toString());
         System.out.println("game created");
         System.out.println(choiceBox.getValue());
-        Theme chosenTheme = new Theme();
+        System.out.println("test 2 2 2 2 ");
+
+        Theme chosenTheme = null;
+        try {
+            chosenTheme = application.getTheme(choiceBox.getValue());
+            System.out.println(chosenTheme.getCardMap().size()+ "is size van het gekozen theme");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         String playerTotal = playerCount.getSelectedToggle().getUserData().toString();
         String gridTotal = gridSize.getSelectedToggle().getUserData().toString();
         Game game = new Game(Integer.parseInt(playerTotal),Integer.parseInt(gridTotal), chosenTheme);
@@ -84,7 +93,9 @@ public class NewGameController extends Controller {
             controller.setLogin(login);
             controller.setStage(stage);
             controller.setGame(game);
-            controller.setCards();
+            System.out.println(chosenTheme.getSize()+ " size die we doorgeven");
+            System.out.println("size van het thema: "+chosenTheme.getCardMap().size());
+            controller.setCards(chosenTheme);
 
             Scene scene = new Scene(pane);
             stage.setScene(scene);
@@ -145,9 +156,9 @@ public class NewGameController extends Controller {
     public void updateThemes() {
         System.out.println("updating themes");
         themeList = new ArrayList<String>();
-        themeList.add("shiba's");
-        themeList.add("star wars");
-        themeList.add("pokémon");
+        themeList.add("Shiba's");
+        themeList.add("Star Wars");
+        themeList.add("Pokémon");
     }
 
     public void getPreviewPics(int themeNumber) {
