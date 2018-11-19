@@ -98,9 +98,10 @@ public class SpectateController extends Controller {
 
     public void back(){
         try {
-            AnchorPane pane = getTransition("PlaySelect.fxml");
+            AnchorPane pane = getTransition("Lobby.fxml");
 
             Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setTitle("lobby");
             Scene scene = new Scene(pane);
             stage.setScene(scene);
         } catch (IOException e) {

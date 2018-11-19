@@ -232,6 +232,7 @@ public class NewGameController extends Controller {
 
             Stage stage = (Stage) backButton.getScene().getWindow();
             Scene scene = new Scene(pane);
+            stage.setTitle("play selection screen");
             stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();

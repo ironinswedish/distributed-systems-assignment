@@ -103,6 +103,8 @@ public class JoinGameController extends Controller {
             AnchorPane pane = getTransition("PlaySelect.fxml");
 
             Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setTitle("play selection screen");
+
             Scene scene = new Scene(pane);
             stage.setScene(scene);
         } catch (IOException e) {

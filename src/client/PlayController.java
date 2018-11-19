@@ -46,6 +46,8 @@ public class PlayController extends Controller {
             AnchorPane pane = getTransition("JoinGameMenu.fxml");
 
             Stage stage = (Stage) joinButton.getScene().getWindow();
+            stage.setTitle("join game");
+
             Scene scene = new Scene(pane);
             stage.setScene(scene);
 
@@ -60,6 +62,8 @@ public class PlayController extends Controller {
             AnchorPane pane = getTransition("Lobby.fxml");
 
             Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setTitle("lobby");
+            
             Scene scene = new Scene(pane);
             stage.setScene(scene);
         } catch (IOException e) {

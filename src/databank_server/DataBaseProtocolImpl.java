@@ -290,7 +290,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         System.out.println(themeId+ " is themeid met size: "+ size);
 
 
-        query = "SELECT pictureid,number FROM picture WHERE themaid ='" + themeId + "'";
+        query = "SELECT picnumber,number FROM picture WHERE themaid ='" + themeId + "'";
         rs = st.executeQuery(query);
 
         int picId;
@@ -301,7 +301,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             //picData=rs.getString("number");
             picData=rs.getBytes("number");
 
-            picId=rs.getInt("pictureid");
+            picId=rs.getInt("picnumber");
 
             cards.put(String.valueOf(picId),picData);
 
