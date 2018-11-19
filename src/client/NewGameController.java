@@ -15,6 +15,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import shared_objects.Game;
 import shared_objects.Theme;
 
@@ -58,6 +59,9 @@ public class NewGameController extends Controller {
     @FXML
     private Button createButton;
 
+    @FXML
+    private Button backButton;
+
     private final ToggleGroup playerCount;
     private final ToggleGroup gridSize;
 
@@ -69,18 +73,20 @@ public class NewGameController extends Controller {
         System.out.println(choiceBox.getValue());
         System.out.println("test 2 2 2 2 ");
 
-        Theme chosenTheme = null;
+       /* Theme chosenTheme = null;
         try {
             chosenTheme = application.getTheme(choiceBox.getValue());
             System.out.println(chosenTheme.getCardMap().size()+ "is size van het gekozen theme");
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        }*/
         String playerTotal = playerCount.getSelectedToggle().getUserData().toString();
         String gridTotal = gridSize.getSelectedToggle().getUserData().toString();
-        Game game = new Game(Integer.parseInt(playerTotal),Integer.parseInt(gridTotal), chosenTheme);
+        //Game game = new Game(Integer.parseInt(playerTotal),Integer.parseInt(gridTotal), chosenTheme);
 
         try {
+            Game game = application.createGame(Integer.parseInt(playerTotal), login,Integer.parseInt(gridTotal),choiceBox.getValue());
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Game.fxml"));
 
             AnchorPane pane = loader.load();
@@ -93,13 +99,31 @@ public class NewGameController extends Controller {
             controller.setLogin(login);
             controller.setStage(stage);
             controller.setGame(game);
-            System.out.println(chosenTheme.getSize()+ " size die we doorgeven");
-            System.out.println("size van het thema: "+chosenTheme.getCardMap().size());
-            controller.setCards(chosenTheme);
+            controller.setCards();
+
+            stage.setTitle("game");
+            stage.setOnCloseRequest( e2 -> {
+
+                try {
+                    controller.quit();
+                    if (dispatch != null) {
+                        dispatch.logout();
+                    }
+                    if (application != null) {
+                        application.logout(login, session, true);
+                    }
+
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+
+            });
 
             Scene scene = new Scene(pane);
             stage.setScene(scene);
 
+        } catch (RemoteException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -184,6 +208,18 @@ public class NewGameController extends Controller {
             rightLowerImage.setImage(preview2);
             rightUpperImage.setImage(preview3);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void back(){
+        try {
+            AnchorPane pane = getTransition("PlaySelect.fxml");
+
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -22,7 +22,7 @@ public class Controller {
     static DispatchProtocol dispatch;
     public static String status;
     public String session;
-    public String login;
+    public static String login;
 
 
     public Stage getStage() {

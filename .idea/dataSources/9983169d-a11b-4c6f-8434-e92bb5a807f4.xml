@@ -67,7 +67,7 @@
     </column>
     <column id="22" parent="7" name="number">
       <Position>4</Position>
-      <DataType>INTEGER|0s</DataType>
+      <DataType>BLOB|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <key id="23" parent="7">
@@ -133,85 +133,117 @@
       <DataType>STRING|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="37" parent="9">
+    <column id="37" parent="9" name="status">
+      <Position>10</Position>
+      <DataType>STRING|0s</DataType>
+    </column>
+    <column id="38" parent="9" name="global_spelid">
+      <Position>11</Position>
+      <DataType>STRING|0s</DataType>
+    </column>
+    <column id="39" parent="9" name="currentplayer">
+      <Position>12</Position>
+      <DataType>INTEGER|0s</DataType>
+    </column>
+    <index id="40" parent="9" name="spellen_global_spelid_uindex">
+      <ColNames>global_spelid</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="41" parent="9">
       <ColNames>spelid</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="38" parent="10" name="type">
+    <column id="42" parent="10" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="39" parent="10" name="name">
+    <column id="43" parent="10" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="40" parent="10" name="tbl_name">
+    <column id="44" parent="10" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="41" parent="10" name="rootpage">
+    <column id="45" parent="10" name="rootpage">
       <Position>4</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="42" parent="10" name="sql">
+    <column id="46" parent="10" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="43" parent="11" name="name">
+    <column id="47" parent="11" name="name">
       <Position>1</Position>
     </column>
-    <column id="44" parent="11" name="seq">
+    <column id="48" parent="11" name="seq">
       <Position>2</Position>
     </column>
-    <column id="45" parent="12" name="themaid">
+    <column id="49" parent="12" name="themaid">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="46" parent="12" name="aantalpics">
+    <column id="50" parent="12" name="aantalpics">
       <Position>2</Position>
       <DataType>INTEGER|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="47" parent="12" name="beschrijving">
+    <column id="51" parent="12" name="beschrijving">
       <Position>3</Position>
       <DataType>TEXT|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="48" parent="12">
+    <key id="52" parent="12">
       <ColNames>themaid</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="49" parent="13" name="userid">
+    <column id="53" parent="13" name="userid">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="50" parent="13" name="login">
+    <column id="54" parent="13" name="login">
       <Position>2</Position>
       <DataType>STRING|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="51" parent="13" name="paswoord">
+    <column id="55" parent="13" name="paswoord">
       <Position>3</Position>
       <DataType>STRING|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="52" parent="13" name="token">
+    <column id="56" parent="13" name="token">
       <Position>4</Position>
       <DataType>STRING|0s</DataType>
     </column>
-    <column id="53" parent="13" name="sessiontime">
+    <column id="57" parent="13" name="sessiontime">
       <Position>5</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="54" parent="13" name="loggedin">
+    <column id="58" parent="13" name="loggedin">
       <Position>6</Position>
       <DataType>boolean|0s</DataType>
     </column>
-    <key id="55" parent="13">
+    <column id="59" parent="13" name="aantalwins">
+      <Position>7</Position>
+      <DataType>INT|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="60" parent="13" name="aantalgelijk">
+      <Position>8</Position>
+      <DataType>INT|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="61" parent="13" name="aantalverloren">
+      <Position>9</Position>
+      <DataType>INT|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <key id="62" parent="13">
       <ColNames>userid</ColNames>
       <Primary>1</Primary>
     </key>

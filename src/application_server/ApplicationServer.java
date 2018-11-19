@@ -6,8 +6,6 @@ import java.rmi.registry.Registry;
 
 public class ApplicationServer {
 
-
-
     public static void start() {
         try {
             Registry registry = LocateRegistry.createRegistry(1399);

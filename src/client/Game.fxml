@@ -18,7 +18,7 @@
                     <items>
                       <AnchorPane>
                            <children>
-                              <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <GridPane fx:id="gridPane" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <columnConstraints>
                                   <ColumnConstraints />
                                 </columnConstraints>
@@ -30,10 +30,11 @@
                         </AnchorPane>
                       <AnchorPane minHeight="-Infinity" minWidth="-Infinity">
                            <children>
-                              <Label fx:id="player1" layoutX="33.0" layoutY="49.0" text="player1" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="50.0" />
-                              <Label fx:id="player2" layoutX="33.0" layoutY="110.0" text="player2" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="100.0" />
-                              <Label fx:id="player3" layoutX="33.0" layoutY="169.0" text="player3" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="150.0" />
-                              <Label fx:id="player4" layoutX="33.0" layoutY="228.0" text="player4" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="200.0" />
+                              <Label fx:id="turnCounter" text="Turn: 0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="15.0" />
+                              <Label fx:id="player1" layoutX="33.0" layoutY="49.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="50.0" />
+                              <Label fx:id="player2" layoutX="33.0" layoutY="110.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="100.0" />
+                              <Label fx:id="player3" layoutX="33.0" layoutY="169.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="150.0" />
+                              <Label fx:id="player4" layoutX="33.0" layoutY="228.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="200.0" />
                            </children></AnchorPane>
                     </items>
                   </SplitPane>
@@ -41,7 +42,7 @@
             </AnchorPane>
           <AnchorPane minHeight="-Infinity" minWidth="-Infinity">
                <children>
-                  <Button layoutX="217.0" layoutY="18.0" mnemonicParsing="false" text="quit" wrapText="true" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="10.0" />
+                  <Button layoutX="217.0" layoutY="18.0" mnemonicParsing="false" onAction="#quit" text="quit" wrapText="true" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="10.0" />
                </children></AnchorPane>
         </items>
       </SplitPane>

@@ -2,6 +2,8 @@ package shared_objects;
 
 import Interfaces.ApplicationProtocol;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +12,7 @@ import java.util.Map;
 public class Theme implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    int themeId;
     int size;
     HashMap<String,byte[]> cardMap;
     String name;
@@ -27,8 +30,8 @@ public class Theme implements Serializable {
         System.out.println(cardMap.size()+ " zoveel kaarten zitten er in de theme met size: "+size);
 
     }
-
-   /* public void setCards(){
+/*
+    public void setCards(){
         for (int i = 0; i < size; i++) {
             if (i == 0) {
                 cardMap.put(String.valueOf(i),"memory_resources/pokemon/pokemon"+"_backside.jpg");
@@ -40,15 +43,25 @@ public class Theme implements Serializable {
         }
     }*/
 
-    public byte[] getImage(String id) {
+    public InputStream getImage(String id) {
 
         System.out.println(this.cardMap.size()+ " is grootte van cardmap");
 
 
-        return this.cardMap.get(id);
+        return new ByteArrayInputStream(cardMap.get(id));
     }
 
     public HashMap<String,byte[]> getCardMap(){
         return cardMap;
     }
+
+
+    public int getThemeId() {
+        return themeId;
+    }
+
+    public void setThemeId(int themeId) {
+        this.themeId = themeId;
+    }
+
 }

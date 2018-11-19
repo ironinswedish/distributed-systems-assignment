@@ -20,6 +20,9 @@ public class LobbyController extends Controller{
     @FXML
     private Button playButton;
 
+    @FXML
+    private Button spectateButton;
+
     public void PlayMenu() {
         try {
 
@@ -29,10 +32,24 @@ public class LobbyController extends Controller{
             Scene scene = new Scene(pane);
             stage.setScene(scene);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void Spectate(){
+        try {
+
+            AnchorPane pane = getTransition("SpectateGame.fxml");
+
+            Stage stage = (Stage) quitButton.getScene().getWindow();
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public void enterStats(){

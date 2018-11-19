@@ -11,13 +11,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class PlayController extends Controller{
+public class PlayController extends Controller {
 
     @FXML
     private Button newButton;
 
     @FXML
     private Button joinButton;
+
+    @FXML
+    private Button backButton;
 
 
     public void NewGameMenu() {
@@ -47,6 +50,18 @@ public class PlayController extends Controller{
             stage.setScene(scene);
 
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void Back() {
+        try {
+            AnchorPane pane = getTransition("Lobby.fxml");
+
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();
         }

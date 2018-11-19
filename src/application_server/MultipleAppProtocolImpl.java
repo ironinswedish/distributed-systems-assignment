@@ -20,6 +20,7 @@ public class MultipleAppProtocolImpl extends UnicastRemoteObject implements Mult
     private String[] applicationServer;
 
     protected MultipleAppProtocolImpl() throws RemoteException {
+
     }
 
 
@@ -38,12 +39,21 @@ public class MultipleAppProtocolImpl extends UnicastRemoteObject implements Mult
         applicationServer = new String[2];
         applicationServer[0] = "";
         applicationServer[1] = "";
+        boolean bound = false;
         try {
             if (registry == null) {
                 registry = LocateRegistry.createRegistry(Integer.parseInt(port));
             }
+           /* String[] serviceList = registry.list();
+            for (int i = 0; i < serviceList.length; i++) {
+                if (serviceList[i].equals("applicationService")) {
+                    bound = true;
+                }
+            }*/
+            if (!online) {
+                registry.rebind("applicationService", new ApplicationProtocolImpl());
+            }
 
-            registry.rebind("applicationService", new ApplicationProtocolImpl());
 
             applicationServer[0] = host;
             applicationServer[1] = port;

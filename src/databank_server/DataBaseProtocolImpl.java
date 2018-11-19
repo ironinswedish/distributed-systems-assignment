@@ -1,21 +1,28 @@
 package databank_server;
 
 import Interfaces.DataBaseProtocol;
+import shared_objects.Game;
 import shared_objects.Theme;
 
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.*;
 
 public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBaseProtocol {
 
     static Connection conn;
     static Statement st;
+    static String SERVERNAME = "database1";
 
 
     public DataBaseProtocolImpl() throws RemoteException {
         setupConnection();
+
 
         //codevoorbeeld voor periodieke taak uit te voeren zoals updaten database
 
@@ -54,6 +61,23 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+
+    private void setupConnection() {
+        conn = null;
+        try {
+            //url (pad) naar .sqlite database
+            String url = "jdbc:sqlite:memorydb.sqlite";
+            conn = DriverManager.getConnection(url);
+            System.out.println("Connection to SQLite has been established.");
+            st = conn.createStatement();
+
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+
+    }
+
+    //User logica********************************************************************************************************//
     private void resetToken(int userid) throws SQLException {
         String upd = "UPDATE users SET token = ?,sessiontime = ? WHERE userid = ? ";
 
@@ -82,21 +106,6 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         prst.setInt(1, time + 1);
         prst.setInt(2, userid);
         prst.executeUpdate();
-    }
-
-    private void setupConnection() {
-        conn = null;
-        try {
-            //url (pad) naar .sqlite database
-            String url = "jdbc:sqlite:memorydb.sqlite";
-            conn = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
-            st = conn.createStatement();
-
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
-
     }
 
     //wordt (nog) niet gebruikt
@@ -199,9 +208,6 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     @Override
     public String[] registerUser(String username, String hashedPassword) {
-
-
-
         String[] result = new String[2];
         result[0] = "";
         result[1] = "";
@@ -393,6 +399,187 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             System.out.println("rank: "+key+ " "+ranking.get(key));
         }
         return ranking;
+    }
+
+    //Game Logica ****************************************************************************************//
+    @Override
+    public Game createGame(Game game, String appserver) throws RemoteException {
+        int aantalspelers = game.getPlayerCount();
+        int aantalspectaters = game.getSpectaterCount();
+        int themaid = game.getTheme().getThemeId();
+        int zetnr = game.getTurnCount();
+        String kaartlayout = game.cardMatrixToString();
+        String volgorde = game.playOrderToString();
+        String scores = game.scoresToString();
+        String applicationserver = appserver;
+        String status = game.getStatus();
+
+
+        String ins = "INSERT INTO spellen(aantalspelers,aantalspectaters,themaid,zetnr,kaartlayout,volgorde,scores,applicationserver,status,currentplayer) VALUES(?,?,?,?,?,?,?,?,?,?)";
+
+        PreparedStatement prst;
+
+
+        try {
+            prst = conn.prepareStatement(ins);
+            prst.setInt(1, aantalspelers);
+            prst.setInt(2, aantalspectaters);
+            prst.setInt(3, themaid);
+            prst.setInt(4, zetnr);
+            prst.setString(5, kaartlayout);
+            prst.setString(6, volgorde);
+            prst.setString(7, scores);
+            prst.setString(8, applicationserver);
+            prst.setString(9, status);
+            prst.setInt(10, game.getCurrentplayer());
+
+            prst.executeUpdate();
+
+            game = setId(game, appserver);
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+        return game;
+    }
+
+    @Override
+    public void updateGame(Game game) throws RemoteException {
+        String upd = "UPDATE spellen SET aantalSpelers = ?, aantalspectaters = ?, zetnr = ?,volgorde = ?, kaartlayout = ?, scores = ?, currentplayer = ?,status = ? WHERE global_spelid= ?";
+        PreparedStatement prst;
+
+        try {
+            prst = conn.prepareStatement(upd);
+            prst.setInt(1, game.getPlayerCount());
+            prst.setInt(2, game.getSpectaterCount());
+            prst.setInt(3, game.getTurnCount());
+            prst.setString(4, game.playOrderToString());
+            prst.setString(5, game.cardMatrixToString());
+            prst.setString(6, game.scoresToString());
+            prst.setInt(7, game.getCurrentplayer());
+            prst.setString(8, game.getStatus());
+            prst.setString(9, game.getGameId());
+            prst.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public ArrayList<Game> getGamesWithStatus(String status) throws RemoteException {
+        String query = "SELECT global_spelid, aantalspelers, currentplayer FROM spellen WHERE status ='"+status+"'";
+        PreparedStatement prst;
+        ResultSet rs;
+        ArrayList<Game> pendingGameList = new ArrayList<>();
+        try {
+            prst = conn.prepareStatement(query);
+            rs = prst.executeQuery();
+
+            while (rs.next()) {
+                pendingGameList.add(new Game(rs.getString("global_spelid"), rs.getInt("aantalspelers"), rs.getInt("currentplayer")));
+            }
+            return pendingGameList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void addLoss(String login) throws RemoteException {
+        String get = "SELECT aantalverloren FROM users WHERE login ='" + login + "'";
+        String upd = "UPDATE users SET aantalverloren = ? WHERE login = ? ";
+        PreparedStatement prst;
+        ResultSet rs;
+        try {
+            prst = conn.prepareStatement(get);
+            rs = prst.executeQuery();
+            int loss = rs.getInt("aantalverloren")+1;
+            prst = conn.prepareStatement(upd);
+            prst.setInt(1, loss);
+            prst.setString(2, login);
+            prst.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void addWin(String login) throws RemoteException {
+        String get = "SELECT aantalwins FROM users WHERE login ='" + login + "'";
+        String upd = "UPDATE users SET aantalwins = ? WHERE login = ? ";
+        PreparedStatement prst;
+        ResultSet rs;
+        try {
+            prst = conn.prepareStatement(get);
+            rs = prst.executeQuery();
+            int win = rs.getInt("aantalwins")+1;
+            prst = conn.prepareStatement(upd);
+            prst.setInt(1, win);
+            prst.setString(2, login);
+            prst.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void addDraw(String login) throws RemoteException {
+        String get = "SELECT aantalgelijk FROM users WHERE login ='" + login + "'";
+        String upd = "UPDATE users SET aantalgelijk = ? WHERE login = ? ";
+        PreparedStatement prst;
+        ResultSet rs;
+        try {
+            prst = conn.prepareStatement(get);
+            rs = prst.executeQuery();
+            int draw = rs.getInt("aantalgelijk")+1;
+            prst = conn.prepareStatement(upd);
+            prst.setInt(1, draw);
+            prst.setString(2, login);
+            prst.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public Game setId(Game game, String appserver) {
+        String get = "select seq from sqlite_sequence where name = \"spellen\"";
+        String upd = "UPDATE spellen SET global_spelid = ? WHERE spelid= ? ";
+        ResultSet rs;
+        PreparedStatement selectst;
+        String kaartlayout = game.cardMatrixToString();
+        String volgorde = game.playOrderToString();
+        String applicationserver = appserver;
+        String status = "pending";
+
+        int spelid;
+
+        String globalSpelId;
+
+        try {
+            selectst = conn.prepareStatement(get);
+            rs = selectst.executeQuery();
+            spelid = rs.getInt("seq");
+            System.out.println(spelid);
+            globalSpelId = SERVERNAME + "-" + spelid;
+            game.setGameId(globalSpelId);
+            selectst = conn.prepareStatement(upd);
+            selectst.setString(1, globalSpelId);
+            selectst.setInt(2, spelid);
+
+            selectst.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return game;
     }
 
 }

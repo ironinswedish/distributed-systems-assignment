@@ -69,7 +69,7 @@ public class LoginController extends Controller{
         try {
             System.out.println("Username: " + username.getText() + " Password: " + password.getText());
             login = username.getText();
-            String hashedPassword = hashPassword(password.getText());
+            String hashedPassword = password.getText();
             String[] result = application.login(login, hashedPassword,session);
             session = result[1];
             if (result[0].equals("ok")) {
