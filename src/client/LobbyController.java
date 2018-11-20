@@ -54,45 +54,6 @@ public class LobbyController extends Controller{
 
     }
 
-    public void enterStats(){
-        try {
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("UserSettings.fxml"));
-            AnchorPane pane = loader.load();
-            Controller userStatsController = loader.getController();
-            userStatsController.setApplication(application);
-            userStatsController.setDispatcher(dispatch);
-            userStatsController.setSession(session);
-            userStatsController.setLogin(login);
-            userStatsController.setStatus(status);
-            userStatsController.setStage(stage);
-
-            loader.getNamespace().put("newUsername",login);
-
-
-            stage.setTitle("user information");
-            stage.setOnCloseRequest( e -> {
-                try {
-                    if (dispatch != null) {
-                        dispatch.logout();
-                    }
-                    if (application != null) {
-                        application.logout(login, session, true);
-                    }
-
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
-                }
-            });
-            Scene scene = new Scene(pane);
-            stage.setScene(scene);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
 
     public void enterRankings(){
         try {
@@ -138,6 +99,48 @@ public class LobbyController extends Controller{
 
 
     }
+
+    public void enterStats(){
+        try {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("UserSettings.fxml"));
+            AnchorPane pane = loader.load();
+            Controller userStatsController = loader.getController();
+            userStatsController.setApplication(application);
+            userStatsController.setDispatcher(dispatch);
+            userStatsController.setSession(session);
+            userStatsController.setLogin(login);
+            userStatsController.setStatus(status);
+            userStatsController.setStage(stage);
+
+            loader.getNamespace().put("newUsername",login);
+
+
+            stage.setTitle("userStats");
+            stage.setOnCloseRequest( e -> {
+                try {
+                    if (dispatch != null) {
+                        dispatch.logout();
+                    }
+                    if (application != null) {
+                        application.logout(login, session, true);
+                    }
+
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
 
     public void logOut() {
         try {
