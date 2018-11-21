@@ -50,7 +50,7 @@ public class Theme implements Serializable {
 
     public InputStream getImage(String id) {
 
-        System.out.println(this.cardMap.size()+ " is grootte van cardmap");
+        //System.out.println(this.cardMap.size()+ " is grootte van cardmap");
 
 
         return new ByteArrayInputStream(cardMap.get(id));

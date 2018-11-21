@@ -120,7 +120,7 @@ public class GameController extends Controller {
 
                     });
 
-                    System.out.println("first char is 0");
+                    //System.out.println("first char is 0");
                 } else {
 
 
