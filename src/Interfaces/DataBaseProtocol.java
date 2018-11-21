@@ -8,6 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public interface DataBaseProtocol extends Remote {
 
@@ -45,4 +46,5 @@ public interface DataBaseProtocol extends Remote {
 
     public ArrayList<Theme> getPreviewThemes() throws RemoteException;
 
+    List<String> getThemesWithSize(int size) throws RemoteException;
 }

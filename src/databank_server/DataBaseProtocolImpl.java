@@ -638,4 +638,24 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return game;
     }
 
+    @Override
+    public List<String> getThemesWithSize(int size) throws RemoteException{
+        List<String> themas = new ArrayList<>();
+
+        String query = "SELECT beschrijving FROM thema WHERE aantalpics >= "+size;
+        PreparedStatement prst;
+        ResultSet rs;
+        try {
+            prst = conn.prepareStatement(query);
+            rs = prst.executeQuery();
+            while(rs.next()){
+                themas.add(rs.getString("beschrijving"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return themas;
+
+    }
+
 }

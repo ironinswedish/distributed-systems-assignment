@@ -7,11 +7,11 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="465.0" prefWidth="345.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.NewGameController">
+<AnchorPane prefHeight="465.0" prefWidth="345.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.NewGameController">
    <children>
-      <RadioButton fx:id="gridSize4" layoutX="152.0" layoutY="155.0" mnemonicParsing="false" text="4X4" AnchorPane.leftAnchor="145.0" AnchorPane.topAnchor="115.0" />
-      <RadioButton fx:id="gridSize6" layoutX="202.0" layoutY="155.0" mnemonicParsing="false" text="6X6" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="115.0" />
-      <RadioButton fx:id="gridSize8" layoutX="256.0" layoutY="155.0" mnemonicParsing="false" text="8X8" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="115.0" />
+      <RadioButton fx:id="gridSize4" layoutX="152.0" layoutY="155.0" mnemonicParsing="false" onAction="#setChoiceBox4" text="4X4" AnchorPane.leftAnchor="145.0" AnchorPane.topAnchor="115.0" />
+      <RadioButton fx:id="gridSize6" layoutX="202.0" layoutY="155.0" mnemonicParsing="false" onAction="#setChoiceBox6" text="6X6" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="115.0" />
+      <RadioButton fx:id="gridSize8" layoutX="256.0" layoutY="155.0" mnemonicParsing="false" onAction="#setChoiceBox8" text="8X8" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="115.0" />
       <Button fx:id="createButton" layoutX="113.0" layoutY="406.0" mnemonicParsing="false" onAction="#createGame" text="Create game" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="104.0" />
       <RadioButton fx:id="playercount2" layoutX="194.0" layoutY="65.0" mnemonicParsing="false" text="2" AnchorPane.rightAnchor="115.0" AnchorPane.topAnchor="65.0" />
       <RadioButton fx:id="playercount3" layoutX="229.0" layoutY="67.0" mnemonicParsing="false" text="3" AnchorPane.rightAnchor="63.0" AnchorPane.topAnchor="65.0" />

@@ -187,6 +187,53 @@ public class NewGameController extends Controller {
 
     public void setChoicebox() {
         updateThemes();
+        try {
+            themeNames=application.getThemesWithSize(8);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        choiceBox.setItems(FXCollections.observableArrayList(themeNames));
+        choiceBox.setValue(themeNames.get(0));
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener((ChangeListener) (ov, oldSelected, newSelected) -> {
+            getPreviewPics(Integer.parseInt(newSelected.toString()));
+
+        });
+    }
+
+    public void setChoiceBox4(){
+        try {
+            themeNames=application.getThemesWithSize(8);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        choiceBox.setItems(FXCollections.observableArrayList(themeNames));
+        choiceBox.setValue(themeNames.get(0));
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener((ChangeListener) (ov, oldSelected, newSelected) -> {
+            getPreviewPics(Integer.parseInt(newSelected.toString()));
+
+        });
+    }
+
+    public void setChoiceBox6(){
+        try {
+            themeNames=application.getThemesWithSize(18);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        choiceBox.setItems(FXCollections.observableArrayList(themeNames));
+        choiceBox.setValue(themeNames.get(0));
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener((ChangeListener) (ov, oldSelected, newSelected) -> {
+            getPreviewPics(Integer.parseInt(newSelected.toString()));
+
+        });
+    }
+
+    public void setChoiceBox8(){
+        try {
+            themeNames=application.getThemesWithSize(32);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         choiceBox.setItems(FXCollections.observableArrayList(themeNames));
         choiceBox.setValue(themeNames.get(0));
         choiceBox.getSelectionModel().selectedIndexProperty().addListener((ChangeListener) (ov, oldSelected, newSelected) -> {

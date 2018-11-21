@@ -12,6 +12,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ApplicationProtocol extends Remote {
 
@@ -50,4 +51,6 @@ public interface ApplicationProtocol extends Remote {
     public ArrayList<String> getThemeNames() throws RemoteException;
 
     ArrayList<Theme> getPreviewThemes() throws RemoteException;
+
+    List<String> getThemesWithSize(int size) throws RemoteException;
 }

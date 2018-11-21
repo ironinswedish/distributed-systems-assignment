@@ -15,6 +15,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ApplicationProtocolImpl extends UnicastRemoteObject implements ApplicationProtocol {
 
@@ -224,6 +225,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         notifyOtherPlayers(game2);
 
 
+    }
+
+    @Override
+    public List<String> getThemesWithSize(int size) throws RemoteException{
+        System.out.println("Size is; "+size);
+        List<String> getThemesWithSize= dataTransfer.getThemesWithSize(size);
+        System.out.println("Size van lijst is: "+getThemesWithSize.size());
+        return getThemesWithSize;
     }
 
 

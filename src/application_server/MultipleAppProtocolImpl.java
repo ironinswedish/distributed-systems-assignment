@@ -12,7 +12,8 @@ import java.rmi.server.UnicastRemoteObject;
 /*
 protocol verantwoordelijk voor communicatie tussen ApplicationServers
  */
-public class MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtocol {
+public class
+MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtocol {
 
     private boolean online = false;
     private int userCount;
