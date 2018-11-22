@@ -5,15 +5,20 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.LoginController">
    <children>
       <TextField fx:id="username" layoutX="226.0" layoutY="80.0" promptText="Username" AnchorPane.leftAnchor="226.0" AnchorPane.topAnchor="80.0" />
       <PasswordField fx:id="password" layoutX="226.0" layoutY="134.0" promptText="Password" AnchorPane.leftAnchor="226.0" AnchorPane.topAnchor="134.0" />
-      <Button fx:id="loginKnop" layoutX="275.0" layoutY="188.0" mnemonicParsing="false" onAction="#login" text="Login" wrapText="true" AnchorPane.leftAnchor="275.0" AnchorPane.topAnchor="188.0" />
-      <Button fx:id="quitKnop" layoutX="275.0" layoutY="282.0" mnemonicParsing="false" onAction="#quit" text="Quit" wrapText="true" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="275.0" />
-      <Button fx:id="registerKnop" layoutX="272.0" layoutY="231.0" mnemonicParsing="false" onAction="#register" text="Register" wrapText="true" AnchorPane.bottomAnchor="135.0" AnchorPane.leftAnchor="275.0" />
-      <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="${status}" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="6.0" />
-      <Label fx:id="messageLabel" layoutX="424.0" layoutY="85.0"/>
+      <VBox alignment="CENTER" layoutX="275.0" layoutY="188.0" spacing="15.0">
+         <children>
+            <Button fx:id="loginKnop" mnemonicParsing="false" onAction="#login" text="Login" wrapText="true" />
+            <Button fx:id="registerKnop" mnemonicParsing="false" onAction="#register" text="Register" wrapText="true" />
+            <Button fx:id="quitKnop" mnemonicParsing="false" onAction="#quit" text="Quit" wrapText="true" />
+         </children>
+      </VBox>
+      <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="${status}" textFill="${statusColor}" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="6.0" />
+      <Label fx:id="messageLabel" layoutX="424.0" layoutY="85.0" />
    </children>
 </AnchorPane>

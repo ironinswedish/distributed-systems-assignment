@@ -59,6 +59,12 @@ public class Client extends Application {
         loader = new FXMLLoader(getClass().getResource("Login.fxml"));
         pane = loader.load();
         loader.getNamespace().put("status", status);
+        if(status.equals("status: connected")){
+            loader.getNamespace().put("statusColor","GREEN");
+        }
+        else{
+            loader.getNamespace().put("statusColor","RED");
+        }
 
 
         LoginController loginController = loader.getController();
