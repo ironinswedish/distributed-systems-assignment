@@ -1,13 +1,10 @@
 package Interfaces;
 
-import javafx.scene.control.TextField;
 import shared_objects.Theme;
 
 import shared_objects.Game;
 import shared_objects.Move;
-import shared_objects.Theme;
 
-import java.lang.reflect.Array;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -18,7 +15,7 @@ public interface ApplicationProtocol extends Remote {
 
     public String[] login(String username, String password, String session) throws RemoteException;
 
-    public String[] register(String username, String password) throws RemoteException;
+    public String[] register(String username, String password, byte[] salt) throws RemoteException;
 
     public void logout(String login, String session,boolean xButton) throws RemoteException;
 
@@ -53,4 +50,6 @@ public interface ApplicationProtocol extends Remote {
     ArrayList<Theme> getPreviewThemes() throws RemoteException;
 
     List<String> getThemesWithSize(int size) throws RemoteException;
+
+    byte[] getSalt(String login) throws RemoteException;
 }

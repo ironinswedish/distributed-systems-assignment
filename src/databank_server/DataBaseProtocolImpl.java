@@ -4,9 +4,11 @@ import Interfaces.DataBaseProtocol;
 import shared_objects.Game;
 import shared_objects.Theme;
 
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -206,20 +208,24 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         prst.executeUpdate();
     }
 
+
+
+
     @Override
-    public String[] registerUser(String username, String hashedPassword) {
+    public String[] registerUser(String username, String hashedPassword,byte[] salt) {
         String[] result = new String[2];
         result[0] = "";
         result[1] = "";
 
 
-        String ins = "INSERT INTO users(login,paswoord,loggedin) VALUES(?,?,?)";
+        String ins = "INSERT INTO users(login,paswoord,loggedin,salt) VALUES(?,?,?,?)";
         if (checkUser(username)) {
             try {
                 PreparedStatement prst = conn.prepareStatement(ins);
                 prst.setString(1, username);
                 prst.setString(2, hashedPassword);
                 prst.setBoolean(3, true);
+                prst.setBytes(4,salt);
 
 
                 prst.executeUpdate();
@@ -236,6 +242,22 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             result[0] = "user exists";
             return result;
         }
+    }
+
+    @Override
+    public byte[] getSalt(String login) throws RemoteException{
+        String query = "SELECT salt FROM users WHERE login ='" + login + "'";
+        byte[] salt;
+        try {
+            ResultSet rs = st.executeQuery(query);
+            salt=rs.getBytes("salt");
+            return salt;
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

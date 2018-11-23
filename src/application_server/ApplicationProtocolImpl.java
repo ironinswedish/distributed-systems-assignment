@@ -2,13 +2,11 @@ package application_server;
 
 import Interfaces.ApplicationProtocol;
 import Interfaces.DataBaseProtocol;
-import Interfaces.DispatchProtocol;
 import shared_objects.Game;
 import shared_objects.Move;
 import shared_objects.Theme;
 
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -60,9 +58,9 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
     @Override
-    public String[] register(String username, String password) throws RemoteException {
+    public String[] register(String username, String password, byte[] salt) throws RemoteException {
         System.out.println("username: " + username + "password: " + password);
-        return dataTransfer.registerUser(username, password);
+        return dataTransfer.registerUser(username, password,salt);
     }
 
 
@@ -242,6 +240,11 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         System.out.println("notify");
        // }
 
+    }
+
+    @Override
+    public byte[] getSalt(String login) throws RemoteException{
+        return dataTransfer.getSalt(login);
     }
 
 

@@ -81,11 +81,41 @@ public class UserSettingsController extends Controller {
         }
     }
 
+    private String getSecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            //Add password bytes to digest
+            md.update(salt);
+            //Get the hash's bytes
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            //This bytes[] has bytes in decimal format;
+            //Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            //Get complete hashed password in hex format
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
     public void changePassword(){
         int result = 0;
         try {
 
-            result = application.changePassword(hashPassword(passwordField.getText()),login);
+            byte[] salt = application.getSalt(login);
+
+            String hashedPassword = getSecurePassword(passwordField.getText(),salt);
+
+            result = application.changePassword(hashedPassword,login);
             System.out.println("Going into change password with: "+passwordField.getText()+ " and  "+login);
         } catch (RemoteException e) {
             e.printStackTrace();

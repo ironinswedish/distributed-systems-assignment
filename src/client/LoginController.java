@@ -14,6 +14,8 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 
 public class LoginController extends Controller{
 
@@ -32,20 +34,16 @@ public class LoginController extends Controller{
     @FXML
     private Label messageLabel;
 
-    public String hashPassword(String password) {
-
-        String generatedPassword="";
-
-        // Create MessageDigest instance for MD5
-        MessageDigest md = null;
+    private String getSecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
         try {
-            md = MessageDigest.getInstance("MD5");
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
             //Add password bytes to digest
-            md.update(password.getBytes());
-
+            md.update(salt);
             //Get the hash's bytes
-            byte[] bytes = md.digest();
-
+            byte[] bytes = md.digest(passwordToHash.getBytes());
             //This bytes[] has bytes in decimal format;
             //Convert it to hexadecimal format
             StringBuilder sb = new StringBuilder();
@@ -55,21 +53,26 @@ public class LoginController extends Controller{
             }
             //Get complete hashed password in hex format
             generatedPassword = sb.toString();
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-
-
         return generatedPassword;
-
-
     }
+
 
     public void login() {
         try {
             System.out.println("Username: " + username.getText() + " Password: " + password.getText());
             login = username.getText();
-            String hashedPassword = password.getText();
+
+            byte[] salt =application.getSalt(login);
+
+
+            String hashedPassword = getSecurePassword(password.getText(),salt);
+
+            System.out.println(salt);
+            System.out.println(hashedPassword);
             String[] result = application.login(login, hashedPassword,session);
             session = result[1];
             if (result[0].equals("ok")) {
@@ -84,29 +87,42 @@ public class LoginController extends Controller{
 
     }
 
-    public void register() {
-
+    public void enterRegister(){
         try {
-            login = username.getText();
-            String hashedPassword = hashPassword(password.getText());
-            String[] result = application.register(login, hashedPassword);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Register.fxml"));
+            AnchorPane pane = loader.load();
+            Controller lobbyController = loader.getController();
+            lobbyController.setApplication(application);
+            lobbyController.setDispatcher(dispatch);
+            lobbyController.setSession(session);
+            lobbyController.setLogin(login);
+            lobbyController.setStatus(status);
+            lobbyController.setStage(stage);
 
-            session = result[1];
-            if (result[0].equals("ok")) {
-                enterLobby();
-            }
-            else if(result[0].equals("user exists")){
-                messageLabel.setText("This user already exists.");
-            }
-            else {
-                errorMessage(result[0]);
-                System.out.println(result[0]);
-                messageLabel.setText("Something went wrong.");
-            }
-        } catch (RemoteException e) {
+            // Stage stage = (Stage) loginKnop.getScene().getWindow();
+            stage.setTitle("lobby");
+            stage.setOnCloseRequest( e -> {
+                try {
+                    if (dispatch != null) {
+                        dispatch.logout();
+                    }
+                    if (application != null) {
+                        application.logout(login, session, true);
+                    }
+
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
     public void enterLobby() {
         try {
