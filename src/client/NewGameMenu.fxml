@@ -4,11 +4,17 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="465.0" prefWidth="345.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.NewGameController">
    <children>
+      <ImageView fitHeight="467.0" fitWidth="346.0" layoutX="-1.0" layoutY="-2.0" opacity="0.42" pickOnBounds="true">
+         <image>
+            <Image url="@Background.jpg" />
+         </image>
+      </ImageView>
       <RadioButton fx:id="gridSize4" layoutX="152.0" layoutY="155.0" mnemonicParsing="false" onAction="#setChoiceBox4" text="4X4" AnchorPane.leftAnchor="145.0" AnchorPane.topAnchor="115.0" />
       <RadioButton fx:id="gridSize6" layoutX="202.0" layoutY="155.0" mnemonicParsing="false" onAction="#setChoiceBox6" text="6X6" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="115.0" />
       <RadioButton fx:id="gridSize8" layoutX="256.0" layoutY="155.0" mnemonicParsing="false" onAction="#setChoiceBox8" text="8X8" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="115.0" />

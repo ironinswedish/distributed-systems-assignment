@@ -4,11 +4,18 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.RankingsController">
    <children>
+      <ImageView fitHeight="419.0" fitWidth="615.0" layoutX="-1.0" layoutY="-1.0" opacity="0.42" pickOnBounds="true">
+         <image>
+            <Image url="@Background.jpg" />
+         </image>
+      </ImageView>
       <Label fx:id="userLosses" layoutX="351.0" layoutY="29.0" text="${losses}" />
       <Label layoutX="24.0" layoutY="18.0" text="My statistics:">
          <font>
@@ -21,6 +28,7 @@
       <Button layoutX="484.0" layoutY="346.0" mnemonicParsing="false" onAction="#backToLobby" text="Back to menu" />
       <TableView fx:id="table" layoutX="24.0" layoutY="71.0" prefHeight="270.0" prefWidth="556.0">
         <columns>
+            <TableColumn fx:id="colRank" prefWidth="83.0" sortType="DESCENDING" text="Rank" />
           <TableColumn fx:id="colScore" prefWidth="83.0" sortType="DESCENDING" text="Score" />
           <TableColumn fx:id="colName" minWidth="0.0" prefWidth="472.0" sortable="false" text="Username" />
         </columns>

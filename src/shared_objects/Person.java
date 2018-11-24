@@ -7,10 +7,17 @@ public class Person {
 
     SimpleIntegerProperty score;
     SimpleStringProperty name;
+    SimpleIntegerProperty rank;
 
     public Person(int s, String n){
         score=new SimpleIntegerProperty(s);
         name=new SimpleStringProperty(n);
+    }
+
+    public Person(int s, String n, int r){
+        score=new SimpleIntegerProperty(s);
+        name=new SimpleStringProperty(n);
+        rank=new SimpleIntegerProperty(r);
     }
 
 
@@ -22,6 +29,8 @@ public class Person {
         this.name = new SimpleStringProperty(name);
     }
 
+    public void setRank(int rank){ this.rank = new SimpleIntegerProperty(rank); }
+
     public int getScore() {
         return score.get();
     }
@@ -29,4 +38,6 @@ public class Person {
     public String getName() {
         return name.get();
     }
+
+    public int getRank() { return rank.get(); }
 }

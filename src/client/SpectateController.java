@@ -92,7 +92,7 @@ public class SpectateController extends Controller {
 
             });
 
-            this.getChildren().addAll(players, join);
+            this.getChildren().addAll(join, players);
         }
     }
 
@@ -119,7 +119,7 @@ public class SpectateController extends Controller {
             for (int i = startedGameList.size()-1; i> 0; i--) {
                 tempGame = startedGameList.get(i);
 
-                gameList.add(new HBoxCell("players: " + tempGame.getPlayerCount() + "/" + (tempGame.getCurrentplayer()+1) + " ", tempGame.getGameId()));
+                gameList.add(new HBoxCell("players: " + (tempGame.getCurrentplayer()+1) + "/" + tempGame.getPlayerCount() + " ", tempGame.getGameId()));
             }
 
             ObservableList<HBoxCell> myObservableList = FXCollections.observableList(gameList);

@@ -2,12 +2,19 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="360.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.LobbyController">
    <children>
+      <ImageView fitHeight="420.0" fitWidth="614.0" layoutY="-2.0" opacity="0.42" pickOnBounds="true">
+         <image>
+            <Image url="@Background.jpg" />
+         </image>
+      </ImageView>
       <VBox alignment="CENTER" layoutX="249.0" layoutY="113.0" maxWidth="1.7976931348623157E308" spacing="15.0">
          <children>
             <Button fx:id="playButton" mnemonicParsing="false" onAction="#PlayMenu" text="Play" />
@@ -17,9 +24,10 @@
             <Button fx:id="quitButton" mnemonicParsing="false" onAction="#logOut" text="Log out" />
          </children>
       </VBox>
-      <Label layoutX="243.0" layoutY="50.0" text="Welcome" textFill="#0080ff" AnchorPane.leftAnchor="243.0" AnchorPane.topAnchor="50.0">
+      <Label layoutX="246.0" layoutY="43.0" text="Welcome" textAlignment="CENTER" textFill="#f50000">
          <font>
-            <Font name="Comic Sans MS" size="27.0" />
-         </font></Label>
+            <Font name="Playbill" size="56.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

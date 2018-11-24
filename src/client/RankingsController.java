@@ -22,6 +22,7 @@ public class RankingsController  extends Controller implements Initializable {
     @FXML private TableView<Person> table;
     @FXML private TableColumn<Person,Integer> colScore;
     @FXML private TableColumn<Person,String> colName;
+    @FXML private TableColumn<Person,Integer> colRank;
 
 
 
@@ -70,11 +71,28 @@ public class RankingsController  extends Controller implements Initializable {
         //nameColumn
         colName.setCellValueFactory(new PropertyValueFactory<>("Name"));
 
+        colRank.setCellValueFactory(new PropertyValueFactory<>("Rank"));
+
         try {
             table.setItems(getCharacters());
+
+            ObservableList<Person> chars = getCharacters();
+            for(Person p:chars){
+                if(p.getName().equals(login)){
+                    int toFocus = p.getRank()-1;
+                    table.requestFocus();
+                    table.getSelectionModel().select(toFocus);
+                    table.getFocusModel().focus(0);
+                }
+            }
+
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+
+
 
 
     }
@@ -100,10 +118,13 @@ public class RankingsController  extends Controller implements Initializable {
             }
         });
 
+        for(int i=0;i<p.size();i++){
+            p.get(i).setRank(i+1);
+        }
 
         for(Person per:p){
-            characters.add(new Person(per.getScore(),per.getName()));
-            System.out.println(per.getName()+per.getScore());
+            characters.add(new Person(per.getScore(),per.getName(),per.getRank()));
+            System.out.println(per.getName()+per.getScore()+""+per.getRank());
         }
         return characters;
     }

@@ -122,7 +122,7 @@ public class JoinGameController extends Controller {
             for (int i = pendingGameList.size()-1; i> 0; i--) {
                 tempGame = pendingGameList.get(i);
 
-                gameList.add(new HBoxCell("players: " + tempGame.getPlayerCount() + "/" + (tempGame.getCurrentplayer()+1) + " ", tempGame.getGameId()));
+                gameList.add(new HBoxCell("players: " + (tempGame.getCurrentplayer()+1) + "/" + tempGame.getPlayerCount() + " ", tempGame.getGameId()));
             }
 
             ObservableList<HBoxCell> myObservableList = FXCollections.observableList(gameList);

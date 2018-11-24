@@ -116,6 +116,44 @@ public class RegisterController extends Controller{
     }
     }
 
+    public void enterLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+            AnchorPane pane = loader.load();
+            Controller lobbyController = loader.getController();
+            lobbyController.setApplication(application);
+            lobbyController.setDispatcher(dispatch);
+            lobbyController.setSession(session);
+            lobbyController.setLogin(login);
+            lobbyController.setStatus(status);
+            lobbyController.setStage(stage);
+
+            // Stage stage = (Stage) loginKnop.getScene().getWindow();
+            stage.setTitle("Login");
+            stage.setOnCloseRequest( e -> {
+                try {
+                    if (dispatch != null) {
+                        dispatch.logout();
+                    }
+                    if (application != null) {
+                        application.logout(login, session, true);
+                    }
+
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
     public void enterLobby() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Lobby.fxml"));

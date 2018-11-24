@@ -5,14 +5,20 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.RegisterController">
    <children>
-      <TextField fx:id="username" layoutX="207.0" layoutY="80.0" promptText="Username" />
-      <PasswordField fx:id="password" layoutX="207.0" layoutY="139.0" promptText="Password" />
-      <PasswordField fx:id="confirmedPassword" layoutX="207.0" layoutY="200.0" promptText="Confirm Password" />
-      <Button fx:id="registerKnop" layoutX="217.0" layoutY="261.0" mnemonicParsing="false" onAction="#register" text="Register" />
-      <Button fx:id="backKnop" layoutX="316.0" layoutY="261.0" mnemonicParsing="false" text="Back" />
+      <TextField fx:id="username" layoutX="207.0" layoutY="104.0" promptText="Username" />
+      <PasswordField fx:id="password" layoutX="208.0" layoutY="161.0" promptText="Password" />
+      <PasswordField fx:id="confirmedPassword" layoutX="208.0" layoutY="216.0" promptText="Confirm Password" />
+      <Button fx:id="registerKnop" layoutX="212.0" layoutY="277.0" mnemonicParsing="false" onAction="#register" text="Register" />
+      <Button fx:id="backKnop" layoutX="316.0" layoutY="277.0" mnemonicParsing="false" onAction="#enterLogin" text="Back" />
       <Label fx:id="messageLabel" layoutX="207.0" layoutY="231.0" />
+      <Label layoutX="248.0" layoutY="24.0" text="Register" textAlignment="CENTER" textFill="#f50000">
+         <font>
+            <Font name="Playbill" size="56.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
