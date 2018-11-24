@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.PlayController">
+<AnchorPane prefHeight="360.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.PlayController">
    <children>
-      <ImageView fitHeight="204.0" fitWidth="201.0" layoutY="-1.0" opacity="0.42" pickOnBounds="true">
+      <ImageView fitHeight="420.0" fitWidth="614.0" layoutY="-1.0" opacity="0.25" pickOnBounds="true">
          <image>
             <Image url="@Background.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="joinButton" layoutX="58.0" layoutY="85.0" mnemonicParsing="false" onAction="#JoinGameMenu" text="join game" AnchorPane.leftAnchor="58.0" AnchorPane.topAnchor="85.0" />
-      <Button fx:id="newButton" layoutX="56.0" layoutY="32.0" mnemonicParsing="false" onAction="#NewGameMenu" text="new game" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="32.0" />
-      <Button fx:id="backButton" layoutX="75.0" layoutY="137.0" mnemonicParsing="false" onAction="#Back" text="Back" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="75.0" />
+      <Label layoutX="233.0" layoutY="39.0" text="Play game" textAlignment="CENTER" textFill="#2e00f5">
+         <font>
+            <Font name="Playbill" size="56.0" />
+         </font>
+      </Label>
+      <VBox alignment="CENTER" layoutX="238.0" layoutY="134.0" spacing="15.0">
+         <children>
+            <Button fx:id="newButton" mnemonicParsing="false" onAction="#NewGameMenu" text="New game" />
+            <Button fx:id="joinButton" mnemonicParsing="false" onAction="#JoinGameMenu" text="Join game" />
+            <Button fx:id="backButton" mnemonicParsing="false" onAction="#Back" text="Back" />
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

@@ -4,18 +4,25 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.RegisterController">
    <children>
+      <ImageView fitHeight="430.0" fitWidth="625.0" layoutX="-1.0" layoutY="-2.0" opacity="0.25" pickOnBounds="true">
+         <image>
+            <Image url="@Background.jpg" />
+         </image>
+      </ImageView>
       <TextField fx:id="username" layoutX="207.0" layoutY="104.0" promptText="Username" />
       <PasswordField fx:id="password" layoutX="208.0" layoutY="161.0" promptText="Password" />
       <PasswordField fx:id="confirmedPassword" layoutX="208.0" layoutY="216.0" promptText="Confirm Password" />
       <Button fx:id="registerKnop" layoutX="212.0" layoutY="277.0" mnemonicParsing="false" onAction="#register" text="Register" />
       <Button fx:id="backKnop" layoutX="316.0" layoutY="277.0" mnemonicParsing="false" onAction="#enterLogin" text="Back" />
       <Label fx:id="messageLabel" layoutX="207.0" layoutY="231.0" />
-      <Label layoutX="248.0" layoutY="24.0" text="Register" textAlignment="CENTER" textFill="#f50000">
+      <Label layoutX="248.0" layoutY="24.0" text="Register" textAlignment="CENTER" textFill="#1a00f5">
          <font>
             <Font name="Playbill" size="56.0" />
          </font>

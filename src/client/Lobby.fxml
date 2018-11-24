@@ -10,7 +10,7 @@
 
 <AnchorPane prefHeight="360.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.LobbyController">
    <children>
-      <ImageView fitHeight="420.0" fitWidth="614.0" layoutY="-2.0" opacity="0.42" pickOnBounds="true">
+      <ImageView fitHeight="420.0" fitWidth="614.0" layoutY="-2.0" opacity="0.25" pickOnBounds="true">
          <image>
             <Image url="@Background.jpg" />
          </image>
@@ -24,7 +24,7 @@
             <Button fx:id="quitButton" mnemonicParsing="false" onAction="#logOut" text="Log out" />
          </children>
       </VBox>
-      <Label layoutX="246.0" layoutY="43.0" text="Welcome" textAlignment="CENTER" textFill="#f50000">
+      <Label layoutX="246.0" layoutY="43.0" text="Welcome" textAlignment="CENTER" textFill="#2e00f5">
          <font>
             <Font name="Playbill" size="56.0" />
          </font>

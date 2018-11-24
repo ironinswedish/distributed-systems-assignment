@@ -13,7 +13,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.LoginController">
    <children>
-      <ImageView fitHeight="408.0" fitWidth="604.0" opacity="0.42" pickOnBounds="true">
+      <ImageView fitHeight="408.0" fitWidth="604.0" opacity="0.25" pickOnBounds="true">
          <image>
             <Image url="@Background.jpg" />
          </image></ImageView>
@@ -32,7 +32,7 @@
       </VBox>
       <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="${status}" textFill="${statusColor}" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="6.0" />
       <Label fx:id="messageLabel" layoutX="424.0" layoutY="85.0" />
-      <Label layoutX="104.0" layoutY="55.0" text="Brian &amp; Jolan's Memory Game" textAlignment="CENTER" textFill="#f50000">
+      <Label layoutX="104.0" layoutY="55.0" text="Brian &amp; Jolan's Memory Game" textAlignment="CENTER" textFill="#0005f5">
          <font>
             <Font name="Playbill" size="56.0" />
          </font>
