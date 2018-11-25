@@ -45,7 +45,7 @@ public class LobbyController extends Controller{
 
             Stage stage = (Stage) quitButton.getScene().getWindow();
             Scene scene = new Scene(pane);
-            stage.setTitle("spectate");
+            stage.setTitle("Spectate");
             stage.setScene(scene);
 
         } catch (IOException e) {
@@ -76,7 +76,7 @@ public class LobbyController extends Controller{
 
             loader.getNamespace().put("winPerc","Win percentage: "+((int)((stats[0]/(stats[0]+stats[1]+stats[2]))*100))+"%");
 
-            stage.setTitle("rankings");
+            stage.setTitle("Rankings");
             stage.setOnCloseRequest( e -> {
                 try {
                     if (dispatch != null) {
@@ -116,7 +116,7 @@ public class LobbyController extends Controller{
             loader.getNamespace().put("newUsername",login);
 
 
-            stage.setTitle("userStats");
+            stage.setTitle("Settings");
             stage.setOnCloseRequest( e -> {
                 try {
                     if (dispatch != null) {
@@ -161,7 +161,7 @@ public class LobbyController extends Controller{
 
             Stage stage = (Stage) quitButton.getScene().getWindow();
             Scene scene = new Scene(pane);
-            stage.setTitle("login");
+            stage.setTitle("Login");
             stage.setOnCloseRequest(e -> {
                 try {
 

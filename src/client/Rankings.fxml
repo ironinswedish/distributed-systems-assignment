@@ -13,7 +13,7 @@
    <children>
       <ImageView fitHeight="419.0" fitWidth="615.0" layoutX="-1.0" layoutY="-1.0" opacity="0.25" pickOnBounds="true">
          <image>
-            <Image url="@Background.jpg" />
+            <Image url="@Images/Background.jpg" />
          </image>
       </ImageView>
       <Label fx:id="userLosses" layoutX="351.0" layoutY="29.0" text="${losses}" />
@@ -25,7 +25,7 @@
       <Label fx:id="userWins" layoutX="179.0" layoutY="29.0" text="${wins}" />
       <Label fx:id="userDraws" layoutX="264.0" layoutY="29.0" text="${draws}" />
       <Label fx:id="userWinPerc" layoutX="443.0" layoutY="29.0" text="${winPerc}" />
-      <Button layoutX="484.0" layoutY="346.0" mnemonicParsing="false" onAction="#backToLobby" text="Back to menu" />
+      <Button layoutX="469.0" layoutY="358.0" mnemonicParsing="false" onAction="#backToLobby" text="Back to menu" />
       <TableView fx:id="table" layoutX="24.0" layoutY="71.0" prefHeight="270.0" prefWidth="556.0">
         <columns>
             <TableColumn fx:id="colRank" prefWidth="83.0" sortType="DESCENDING" text="Rank" />

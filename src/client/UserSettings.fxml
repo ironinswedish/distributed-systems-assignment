@@ -12,7 +12,7 @@
    <children>
       <ImageView fitHeight="402.0" fitWidth="600.0" opacity="0.25" pickOnBounds="true">
          <image>
-            <Image url="@Background.jpg" />
+            <Image url="@Images/Background.jpg" />
          </image>
       </ImageView>
       <TextField fx:id="usernameField" editable="true" layoutX="119.0" layoutY="106.0" promptText="New Username" />

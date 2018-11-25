@@ -12,7 +12,7 @@
    <children>
       <ImageView fitHeight="420.0" fitWidth="614.0" layoutY="-2.0" opacity="0.25" pickOnBounds="true">
          <image>
-            <Image url="@Background.jpg" />
+            <Image url="@Images/Background.jpg" />
          </image>
       </ImageView>
       <VBox alignment="CENTER" layoutX="249.0" layoutY="113.0" maxWidth="1.7976931348623157E308" spacing="15.0">
@@ -29,5 +29,15 @@
             <Font name="Playbill" size="56.0" />
          </font>
       </Label>
+      <ImageView fitHeight="181.0" fitWidth="177.0" layoutX="40.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/Santa.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="141.0" fitWidth="135.0" layoutX="408.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/Snow.jpg" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>

@@ -103,7 +103,7 @@ public class NewGameController extends Controller {
             controller.setGame(game);
             controller.setCards();
 
-            stage.setTitle("game");
+            stage.setTitle("Game");
             stage.setOnCloseRequest(e2 -> {
 
                 try {
@@ -279,7 +279,7 @@ public class NewGameController extends Controller {
 
             Stage stage = (Stage) backButton.getScene().getWindow();
             Scene scene = new Scene(pane);
-            stage.setTitle("play selection screen");
+            stage.setTitle("Play selection screen");
             stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();

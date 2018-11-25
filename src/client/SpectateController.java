@@ -64,7 +64,7 @@ public class SpectateController extends Controller {
                     controller.setStage(stage);
                     controller.setGame(game);
                     controller.setCards();
-                    stage.setTitle("game");
+                    stage.setTitle("Game");
                     stage.setOnCloseRequest( e2 -> {
 
                         try {
@@ -101,7 +101,7 @@ public class SpectateController extends Controller {
             AnchorPane pane = getTransition("Lobby.fxml");
 
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setTitle("lobby");
+            stage.setTitle("Lobby");
             Scene scene = new Scene(pane);
             stage.setScene(scene);
         } catch (IOException e) {

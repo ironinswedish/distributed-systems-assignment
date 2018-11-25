@@ -13,7 +13,7 @@
    <children>
       <ImageView fitHeight="430.0" fitWidth="625.0" layoutX="-1.0" layoutY="-2.0" opacity="0.25" pickOnBounds="true">
          <image>
-            <Image url="@Background.jpg" />
+            <Image url="@Images/Background.jpg" />
          </image>
       </ImageView>
       <TextField fx:id="username" layoutX="207.0" layoutY="104.0" promptText="Username" />
@@ -27,5 +27,15 @@
             <Font name="Playbill" size="56.0" />
          </font>
       </Label>
+      <ImageView fitHeight="106.0" fitWidth="123.0" layoutX="43.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/Star.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="143.0" fitWidth="145.0" layoutX="453.0" layoutY="135.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/Presents.jpg" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>

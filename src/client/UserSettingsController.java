@@ -143,7 +143,7 @@ public class UserSettingsController extends Controller {
             lobbyController.setStage(stage);
 
             // Stage stage = (Stage) loginKnop.getScene().getWindow();
-            stage.setTitle("lobby");
+            stage.setTitle("Lobby");
             stage.setOnCloseRequest( e -> {
                 try {
                     if (dispatch != null) {

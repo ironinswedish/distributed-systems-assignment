@@ -12,7 +12,7 @@
    <children>
       <ImageView fitHeight="467.0" fitWidth="614.0" layoutX="-1.0" layoutY="-2.0" opacity="0.25" pickOnBounds="true">
          <image>
-            <Image url="@Background.jpg" />
+            <Image url="@Images/Background.jpg" />
          </image>
       </ImageView>
       <RadioButton fx:id="gridSize4" layoutX="198.0" layoutY="115.0" mnemonicParsing="false" onAction="#setChoiceBox4" text="4X4" AnchorPane.leftAnchor="198.0" AnchorPane.topAnchor="115.0" />

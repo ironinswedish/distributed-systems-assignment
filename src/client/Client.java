@@ -73,7 +73,7 @@ public class Client extends Application {
         loginController.setStatus(status);
         loginController.setStage(primaryStage);
 
-        primaryStage.setTitle("login");
+        primaryStage.setTitle("Login");
 
 
         Scene scene = new Scene(pane);

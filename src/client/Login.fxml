@@ -13,9 +13,9 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.LoginController">
    <children>
-      <ImageView fitHeight="408.0" fitWidth="604.0" opacity="0.25" pickOnBounds="true">
+      <ImageView fitHeight="418.0" fitWidth="620.0" layoutX="-8.0" opacity="0.25" pickOnBounds="true">
          <image>
-            <Image url="@Background.jpg" />
+            <Image url="@Images/Background.jpg" />
          </image></ImageView>
       <TextField fx:id="username" layoutX="226.0" layoutY="127.0" promptText="Username" AnchorPane.leftAnchor="226.0" AnchorPane.topAnchor="127.0" />
       <PasswordField fx:id="password" layoutX="226.0" layoutY="185.0" promptText="Password" AnchorPane.leftAnchor="226.0" AnchorPane.topAnchor="185.0" />
@@ -37,5 +37,15 @@
             <Font name="Playbill" size="56.0" />
          </font>
       </Label>
+      <ImageView fitHeight="231.0" fitWidth="172.0" layoutX="28.0" layoutY="168.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/Christmas.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="205.0" fitWidth="136.0" layoutX="457.0" layoutY="187.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/Rudolph.jpg" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>
