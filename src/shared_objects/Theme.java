@@ -60,6 +60,13 @@ public class Theme implements Serializable {
         return cardMap;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getThemeId() {
         return themeId;

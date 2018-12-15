@@ -3,22 +3,23 @@ package application_server;
 import Interfaces.ApplicationProtocol;
 import Interfaces.DataBaseProtocol;
 import shared_objects.Game;
+import shared_objects.Image;
 import shared_objects.Move;
 import shared_objects.Theme;
 
+import java.lang.reflect.Array;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ApplicationProtocolImpl extends UnicastRemoteObject implements ApplicationProtocol {
 
     public static Registry databankServer;
     public static DataBaseProtocol dataTransfer;
+    public static HashMap<Theme, ArrayList<Image>> cachedThemes = new HashMap<>();
 
     private HashMap<String, Game> gameMap = new HashMap<>();
 
@@ -97,7 +98,24 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     //Game logica********************************************************************************************
     @Override
     public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName) throws RemoteException {
-        Theme chosenTheme = dataTransfer.getTheme(chosenThemeName);
+
+        Theme chosenTheme=null;
+        for (Theme key : cachedThemes.keySet()) {
+            if(key.getName().equals(chosenThemeName)){
+                chosenTheme=key;
+                break;
+            }
+        }
+
+        if(chosenTheme==null){
+            chosenTheme = dataTransfer.getTheme(chosenThemeName);
+
+            //Plus caching van het gekozen theme en zijn afbeeldingen in de shizzle
+        }
+
+
+
+
         Game game = new Game(playerTotal, gridTotal, login, chosenTheme);
         game = dataTransfer.createGame(game, "server1");
         gameMap.put(game.getGameId(), game);
