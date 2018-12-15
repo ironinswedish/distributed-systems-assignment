@@ -78,6 +78,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
 
     }
+    //database logica**************************************************************************************
 
     //User logica********************************************************************************************************//
     private void resetToken(int userid) throws SQLException {
