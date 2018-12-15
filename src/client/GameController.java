@@ -339,22 +339,22 @@ public class GameController extends Controller {
             if (i == 0) {
                 player1.setText(game.getPlayorder()[i] + ": " + game.getScores()[i]);
                 if (i == game.getCurrentplayer()) {
-                    player1.setStyle("-fx-border-color: red;");
+                    player1.setStyle("-fx-font-weight: bold;");
                 }
             } else if (i == 1) {
                 player2.setText(game.getPlayorder()[i] + ": " + game.getScores()[i]);
                 if (i == game.getCurrentplayer()) {
-                    player2.setStyle("-fx-border-color: red;");
+                    player2.setStyle("-fx-font-weight: bold;");
                 }
             } else if (i == 2) {
                 player3.setText(game.getPlayorder()[i] + ": " + game.getScores()[i]);
                 if (i == game.getCurrentplayer()) {
-                    player3.setStyle("-fx-border-color: red;");
+                    player3.setStyle("-fx-font-weight: bold;");
                 }
             } else if (i == 3) {
                 player4.setText(game.getPlayorder()[i] + ": " + game.getScores()[i]);
                 if (i == game.getCurrentplayer()) {
-                    player4.setStyle("-fx-border-color: red;");
+                    player4.setStyle("-fx-font-weight: bold;");
                 }
             }
         }

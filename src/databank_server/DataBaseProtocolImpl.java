@@ -516,7 +516,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return ranking;
     }
 
-    public boolean checkToken(String login, String session){
+    public boolean checkToken(String login, String session) throws RemoteException{
         try{
             Jws<Claims> jws= Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
             System.out.println("BODY: "+jws.getBody());
