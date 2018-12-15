@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -61,7 +62,7 @@ public class UserSettingsController extends Controller {
     public void changeUsername(){
         int result = 0;
         try {
-            result = application.changeUsername(usernameField.getText(),login);
+            result = application.changeUsername(usernameField.getText(),login,session);
             System.out.println("Going into change username with: "+usernameField.getText()+ " and  "+login);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -72,6 +73,9 @@ public class UserSettingsController extends Controller {
         }
         else if(result==0){
             System.out.println("Something went wrong.");
+        }
+        else if(result==-2){
+            logOut();
         }
         else{
             login=usernameField.getText();
@@ -115,7 +119,7 @@ public class UserSettingsController extends Controller {
 
             String hashedPassword = getSecurePassword(passwordField.getText(),salt);
 
-            result = application.changePassword(hashedPassword,login);
+            result = application.changePassword(hashedPassword,login,session);
             System.out.println("Going into change password with: "+passwordField.getText()+ " and  "+login);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -123,6 +127,9 @@ public class UserSettingsController extends Controller {
 
         if(result==0){
             System.out.println("Something went wrong.");
+        }
+        else if(result==-2){
+            logOut();
         }
         else{
 
@@ -163,6 +170,43 @@ public class UserSettingsController extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void logOut() {
+        try {
+
+            application.logout(login, session, false);
+            //dispatch.logout();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+            AnchorPane pane = loader.load();
+            loader.getNamespace().put("status", status);
+
+            Controller loginController = loader.getController();
+            loginController.setApplication(application);
+            loginController.setStatus(status);
+            loginController.setSession(session);
+            loginController.setDispatcher(dispatch);
+            loginController.setStage(stage);
+
+            //Stage stage = (Stage) quitButton.getScene().getWindow();
+            Scene scene = new Scene(pane);
+            stage.setTitle("Login");
+            stage.setOnCloseRequest(e -> {
+                try {
+
+                    dispatch.logout();
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            stage.setScene(scene);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -1,16 +1,21 @@
 package databank_server;
 
 import Interfaces.DataBaseProtocol;
+import io.jsonwebtoken.*;
 import shared_objects.Game;
 import shared_objects.Theme;
 
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.*;
@@ -186,7 +191,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
     private String generateKey(String username) throws SQLException {
-        String key = "12345";
+        String key = createJWT(username);
         String upd = "UPDATE users SET token = ?,sessiontime = ? WHERE login = ? ";
 
         PreparedStatement prst = conn.prepareStatement(upd);
@@ -218,14 +223,19 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         result[1] = "";
 
 
-        String ins = "INSERT INTO users(login,paswoord,loggedin,salt) VALUES(?,?,?,?)";
+
+        String ins = "INSERT INTO users(login,paswoord,token,loggedin,salt) VALUES(?,?,?,?,?)";
         if (checkUser(username)) {
             try {
+
+                String jwt = createJWT(username);
+
                 PreparedStatement prst = conn.prepareStatement(ins);
                 prst.setString(1, username);
                 prst.setString(2, hashedPassword);
-                prst.setBoolean(3, true);
-                prst.setBytes(4,salt);
+                prst.setString(3,jwt);
+                prst.setBoolean(4, true);
+                prst.setBytes(5,salt);
 
 
                 prst.executeUpdate();
@@ -339,30 +349,60 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
     @Override
-    public int changeUsername(String usernameField, String login) throws RemoteException{
+    public int changeUsername(String usernameField, String login,String session) throws RemoteException{
 
         if(!checkUser(usernameField)){
             return -1;
         }
         else{
+            try {
+            /*String query = "SELECT token FROM users WHERE login ='" + login + "'";
+            ResultSet rs = st.executeQuery(query);
+            String token =rs.getString("token");*/
+
+            try{
+            Jws<Claims> jws= Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
+            System.out.println("BODY: "+jws.getBody());
+            if(!jws.getBody().get("sub").equals(login)){
+               return -2;
+            }
+            }catch(Exception e){
+                return -2;
+            }
+
             String upd = "UPDATE users SET login = ? WHERE login = ? ";
             System.out.println(login+ " AND "+usernameField);
             PreparedStatement prst = null;
-            try {
+
                 prst = conn.prepareStatement(upd);
                 prst.setString(1, usernameField);
                 prst.setString(2, login);
                 prst.executeUpdate();
                 return 1;
-            } catch (SQLException e) {
+
+
+
+        } catch (SQLException e) {
                 e.printStackTrace();
+                return 0;
             }
-            return 0;
+
         }
     }
 
     @Override
-    public int changePassword(String newPassword, String login) throws RemoteException{
+    public int changePassword(String newPassword, String login,String session) throws RemoteException{
+
+        try{
+            Jws<Claims> jws= Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
+            System.out.println("BODY: "+jws.getBody());
+            if(!jws.getBody().get("sub").equals(login)){
+                return -2;
+            }
+        }catch(Exception e){
+            return -2;
+        }
+
 
             String upd = "UPDATE users SET paswoord = ? WHERE login = ? ";
             System.out.println(login+ " AND "+newPassword);
@@ -380,9 +420,23 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
-    public double[] getUserStats(String login) throws RemoteException{
-        String query = "SELECT aantalwins,aantalgelijk,aantalverloren FROM users WHERE login ='" + login + "'";
+    public double[] getUserStats(String login,String session) throws RemoteException{
         double[] stats = {0,0,0};
+        try{
+            Jws<Claims> jws= Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
+            System.out.println("BODY: "+jws.getBody());
+            if(!jws.getBody().get("sub").equals(login)){
+                stats[0]=-2;
+                return stats;
+            }
+        }catch(Exception e){
+            stats[0]=-2;
+            return stats;
+        }
+
+
+        String query = "SELECT aantalwins,aantalgelijk,aantalverloren FROM users WHERE login ='" + login + "'";
+
         try {
             ResultSet rs = st.executeQuery(query);
             stats[0]=rs.getInt("aantalwins");
@@ -679,5 +733,16 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return themas;
 
     }
+
+   public String createJWT(String username){
+
+       Calendar cal = Calendar.getInstance(); // creates calendar
+       cal.setTime(new Date()); // sets calendar time/date
+       cal.add(Calendar.MINUTE, 30);
+       cal.getTime(); // returns new date object, one hour in the future
+       String compactJws = Jwts.builder().claim("id", 1).setSubject(username).setExpiration(cal.getTime()).signWith(SignatureAlgorithm.HS512, "pokemon1").compact();
+       System.out.println("Gecreeerde string is: "+compactJws);
+        return compactJws;
+   }
 
 }

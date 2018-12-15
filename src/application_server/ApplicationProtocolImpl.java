@@ -66,17 +66,17 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
 
     @Override
-    public int changeUsername(String usernameField, String login)throws RemoteException{
-        return dataTransfer.changeUsername(usernameField,login);
+    public int changeUsername(String usernameField, String login,String session)throws RemoteException{
+        return dataTransfer.changeUsername(usernameField,login,session);
     }
 
-    public int changePassword(String newPassword, String login) throws RemoteException{
-        return dataTransfer.changePassword(newPassword,login);
+    public int changePassword(String newPassword, String login,String session) throws RemoteException{
+        return dataTransfer.changePassword(newPassword,login,session);
     }
 
     @Override
-    public double[] getUserStats(String login) throws RemoteException{
-        return  dataTransfer.getUserStats(login);
+    public double[] getUserStats(String login,String session) throws RemoteException{
+        return  dataTransfer.getUserStats(login,session);
     }
 
     @Override

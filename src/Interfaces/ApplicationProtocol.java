@@ -37,11 +37,11 @@ public interface ApplicationProtocol extends Remote {
 
     public Game spectateGame(String gameId, String login) throws RemoteException;
 
-    int changeUsername(String usernameField, String login)throws RemoteException;
+    int changeUsername(String usernameField, String login,String session)throws RemoteException;
 
-    int changePassword(String newPassword, String login) throws RemoteException;
+    int changePassword(String newPassword, String login,String session) throws RemoteException;
 
-    double[] getUserStats(String login) throws RemoteException;
+    double[] getUserStats(String login,String session) throws RemoteException;
 
     HashMap<String, Integer> getRanking() throws  RemoteException;
 

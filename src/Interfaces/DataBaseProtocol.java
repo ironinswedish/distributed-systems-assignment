@@ -20,11 +20,11 @@ public interface DataBaseProtocol extends Remote {
 
     Theme getTheme(String themeName) throws RemoteException;
 
-    public int changeUsername(String usernameField, String login) throws RemoteException;
+    public int changeUsername(String usernameField, String login,String session) throws RemoteException;
 
-    int changePassword(String newPassword, String login) throws RemoteException;
+    int changePassword(String newPassword, String login,String session) throws RemoteException;
 
-    double[] getUserStats(String login) throws RemoteException;
+    double[] getUserStats(String login,String session) throws RemoteException;
 
     HashMap<String, Integer> getRanking() throws RemoteException;
 

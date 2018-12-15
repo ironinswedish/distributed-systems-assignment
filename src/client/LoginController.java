@@ -99,6 +99,7 @@ public class LoginController extends Controller{
             lobbyController.setStatus(status);
             lobbyController.setStage(stage);
 
+
             // Stage stage = (Stage) loginKnop.getScene().getWindow();
             stage.setTitle("Register");
             stage.setOnCloseRequest( e -> {
