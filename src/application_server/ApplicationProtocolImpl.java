@@ -19,7 +19,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     public static Registry databankServer;
     public static DataBaseProtocol dataTransfer;
-    public static HashMap<Theme, ArrayList<Image>> cachedThemes = new HashMap<>();
+    public static ArrayList<Theme> cachedThemes = new ArrayList<>();
 
     private HashMap<String, Game> gameMap = new HashMap<>();
 
@@ -97,27 +97,33 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     //Game logica********************************************************************************************
     @Override
-    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName) throws RemoteException {
+    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName,String session) throws RemoteException {
 
         Theme chosenTheme=null;
-        for (Theme key : cachedThemes.keySet()) {
-            if(key.getName().equals(chosenThemeName)){
-                chosenTheme=key;
+        for (Theme theme : cachedThemes) {
+            if(theme.getName().equals(chosenThemeName)){
+                chosenTheme=theme;
                 break;
             }
         }
 
         if(chosenTheme==null){
             chosenTheme = dataTransfer.getTheme(chosenThemeName);
+            System.out.println("THEME ID: "+chosenTheme.getThemeId());
 
-            //Plus caching van het gekozen theme en zijn afbeeldingen in de shizzle
+            //Plus caching van het gekozen theme en zijn afbeeldingen
+            cachedThemes.add(chosenTheme);
         }
 
 
 
 
-        Game game = new Game(playerTotal, gridTotal, login, chosenTheme);
-        game = dataTransfer.createGame(game, "server1");
+        Game game = new Game(playerTotal, gridTotal, login, chosenTheme.getThemeId(),chosenTheme.getSize());
+        game = dataTransfer.createGame(game, "server1",login,session);
+        if(game==null){
+            return null;
+        }
+
         gameMap.put(game.getGameId(), game);
         System.out.println(game.getGameId());
         return game;
@@ -198,7 +204,11 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
     @Override
-    public Game joinGame(String gameId, String login) throws RemoteException {
+    public Game joinGame(String gameId, String login,String session) throws RemoteException {
+
+        if(!dataTransfer.checkToken(login,session)){
+            return null;
+        }
 
         Game game = gameMap.get(gameId);
 
@@ -265,5 +275,18 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return dataTransfer.getSalt(login);
     }
 
+    @Override
+    public Theme getTheme(int themeId) throws RemoteException{
+        Theme chosenTheme = null;
+        for (Theme theme : cachedThemes) {
+            if(theme.getThemeId()== themeId){
+                chosenTheme=theme;
+                return chosenTheme;
+            }
+        }
+        chosenTheme= dataTransfer.getTheme(themeId);
+        cachedThemes.add(chosenTheme);
+        return chosenTheme;
+    }
 
 }

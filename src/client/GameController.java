@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.*;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 
 import static java.lang.Thread.sleep;
@@ -48,6 +49,7 @@ public class GameController extends Controller {
     private int imageSize;
     final static GameJudge gamejudge = new GameJudge();
     static int score = 0;
+
 
 
     @FXML
@@ -71,7 +73,12 @@ public class GameController extends Controller {
     public void setCards() throws IOException {
 
         System.out.println("size van het thema: " + theme.getSize());
-        theme = game.getTheme();
+
+        if(theme==null || theme.getThemeId()!=game.getTheme()){
+            //Vraag thema op als dit niet gecacht was op de client
+            theme = application.getTheme(game.getTheme());
+        }
+
 
         String matrixSlot;
         imageSize = 85;
@@ -139,9 +146,35 @@ public class GameController extends Controller {
         gridPane.setPrefSize(imageSize * game.getCardMatrix().length, imageSize * game.getCardMatrix().length);
     }
 
+    public void setTheme(){
+        System.out.println("OUDE THEME ID: "+theme.getThemeId()+ " EN NIEUWE MOET ZIJN: "+game.getTheme());
+        if(game.getTheme()!=theme.getThemeId()){
+            try {
+                System.out.println("OUDE THEME ID: "+theme.getThemeId()+ " EN NIEUWE MOET ZIJN: "+game.getTheme());
+                application.getTheme(game.getTheme());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void setGame(Game game) {
         this.game = game;
-        this.theme = game.getTheme();
+
+        try {
+        if(this.theme!=null){
+            if(this.theme.getThemeId()!=game.getTheme()){
+
+                    application.getTheme(game.getTheme());
+
+            }
+        }else{
+            this.theme = application.getTheme(game.getTheme());
+        }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         gamejudge.resetJudge();
 
         GameListener gameListener = new GameListener();
@@ -484,6 +517,7 @@ public class GameController extends Controller {
             }
         }
     }
+
 
 
     public class FlipCard extends Transition {

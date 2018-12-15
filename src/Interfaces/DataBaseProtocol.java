@@ -28,7 +28,7 @@ public interface DataBaseProtocol extends Remote {
 
     HashMap<String, Integer> getRanking() throws RemoteException;
 
-    public Game createGame(Game game, String appserver) throws RemoteException;
+    public Game createGame(Game game, String appserver,String login,String session) throws RemoteException;
 
     //public void setId(Game game, String appserver) throws RemoteException;
 
@@ -49,4 +49,8 @@ public interface DataBaseProtocol extends Remote {
     List<String> getThemesWithSize(int size) throws RemoteException;
 
     byte[] getSalt(String login) throws RemoteException;
+
+    Theme getTheme(int themeId) throws RemoteException;
+
+    boolean checkToken(String login, String session);
 }

@@ -338,8 +338,47 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             cards.put(String.valueOf(picId),picData);
 
         }
-        Theme t = new Theme(themeName,size,cards);
+        Theme t = new Theme(themeId,themeName,size,cards);
         return t;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public Theme getTheme(int themeId) throws RemoteException{
+
+        try {
+
+            String query = "SELECT aantalpics,beschrijving FROM thema WHERE themaid ='" + themeId + "'";
+            ResultSet rs = st.executeQuery(query);
+
+            String beschrijving = rs.getString("beschrijving");
+            int size = rs.getInt("aantalpics");
+            System.out.println(themeId+ " is themeid met size: "+ size);
+
+
+            query = "SELECT picnumber,number FROM picture WHERE themaid ='" + themeId + "'";
+            rs = st.executeQuery(query);
+
+            int picId;
+            byte[] picData;
+            HashMap<String,byte[]> cards = new HashMap<>();
+
+            while(rs.next()){
+                //picData=rs.getString("number");
+                picData=rs.getBytes("number");
+
+                picId=rs.getInt("picnumber");
+
+                cards.put(String.valueOf(picId),picData);
+
+            }
+            Theme t = new Theme(themeId,beschrijving,size,cards);
+            return t;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -477,12 +516,39 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return ranking;
     }
 
+    public boolean checkToken(String login, String session){
+        try{
+            Jws<Claims> jws= Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
+            System.out.println("BODY: "+jws.getBody());
+            if(!jws.getBody().get("sub").equals(login)){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }catch(Exception e){
+            return false;
+        }
+    }
+
     //Game Logica ****************************************************************************************//
     @Override
-    public Game createGame(Game game, String appserver) throws RemoteException {
+    public Game createGame(Game game, String appserver,String login,String session) throws RemoteException {
+
+
+        try{
+            Jws<Claims> jws= Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
+            System.out.println("BODY: "+jws.getBody());
+            if(!jws.getBody().get("sub").equals(login)){
+                return null;
+            }
+        }catch(Exception e){
+            return null;
+        }
+
         int aantalspelers = game.getPlayerCount();
         int aantalspectaters = game.getSpectaterCount();
-        int themaid = game.getTheme().getThemeId();
+        int themaid = game.getTheme();
         int zetnr = game.getTurnCount();
         String kaartlayout = game.cardMatrixToString();
         String volgorde = game.playOrderToString();

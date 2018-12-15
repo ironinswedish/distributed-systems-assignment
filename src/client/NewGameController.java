@@ -87,8 +87,12 @@ public class NewGameController extends Controller {
         //Game game = new Game(Integer.parseInt(playerTotal),Integer.parseInt(gridTotal), chosenTheme);
 
         try {
-            Game game = application.createGame(Integer.parseInt(playerTotal), login, Integer.parseInt(gridTotal), choiceBox.getValue());
+            Game game = application.createGame(Integer.parseInt(playerTotal), login, Integer.parseInt(gridTotal), choiceBox.getValue(),session);
 
+            if(game==null){
+                logOut();
+            }
+            else{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Game.fxml"));
 
             AnchorPane pane = loader.load();
@@ -101,6 +105,7 @@ public class NewGameController extends Controller {
             controller.setLogin(login);
             controller.setStage(stage);
             controller.setGame(game);
+            controller.setTheme();
             controller.setCards();
 
             stage.setTitle("Game");
@@ -123,7 +128,7 @@ public class NewGameController extends Controller {
 
             Scene scene = new Scene(pane);
             stage.setScene(scene);
-
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -159,6 +164,42 @@ public class NewGameController extends Controller {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public void logOut() {
+        try {
+
+            application.logout(login, session, false);
+            //dispatch.logout();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+            AnchorPane pane = loader.load();
+            loader.getNamespace().put("status", status);
+
+            Controller loginController = loader.getController();
+            loginController.setApplication(application);
+            loginController.setStatus(status);
+            loginController.setSession(session);
+            loginController.setDispatcher(dispatch);
+            loginController.setStage(stage);
+
+            Scene scene = new Scene(pane);
+            stage.setTitle("Login");
+            stage.setOnCloseRequest(e -> {
+                try {
+
+                    dispatch.logout();
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            stage.setScene(scene);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void setGroups() {
