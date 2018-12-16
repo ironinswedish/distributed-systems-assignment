@@ -52,5 +52,5 @@ public interface DataBaseProtocol extends Remote {
 
     Theme getTheme(int themeId) throws RemoteException;
 
-    boolean checkToken(String login, String session);
+    boolean checkToken(String login, String session) throws RemoteException;
 }

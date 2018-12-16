@@ -20,6 +20,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     public static Registry databankServer;
     public static DataBaseProtocol dataTransfer;
     public static ArrayList<Theme> cachedThemes = new ArrayList<>();
+    public static ArrayList<Theme> cachedPreviews = new ArrayList<>();
 
     private HashMap<String, Game> gameMap = new HashMap<>();
 
@@ -92,7 +93,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     @Override
     public ArrayList<Theme> getPreviewThemes() throws RemoteException {
-        return dataTransfer.getPreviewThemes();
+        if(cachedPreviews.isEmpty()){
+        ArrayList<Theme> t= dataTransfer.getPreviewThemes();
+        cachedPreviews=t;
+        return t;
+        }
+        else{
+            return cachedPreviews;
+        }
     }
 
     //Game logica********************************************************************************************
@@ -184,19 +192,19 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     @Override
     public synchronized Game gameChanged(String gameId) throws RemoteException, InterruptedException {
-        System.out.println("gamechanged aangevraagd");
+        //System.out.println("gamechanged aangevraagd");
         Game game = new Game(gameMap.get(gameId));
-        if(game.getLastMove()!=null){
-            System.out.println(game.getLastMove().getCardid1()+" "+game.getLastMove().getCardid2());
-        }
+        //if(game.getLastMove()!=null){
+            //System.out.println(game.getLastMove().getCardid1()+" "+game.getLastMove().getCardid2());
+        //}
         while(gameMap.get(gameId).equals(game)){
-            System.out.println(gameMap.get(gameId).equals(game));
-            if(game.getLastMove()!=null) {
-                System.out.println(game.getLastMove().getCardid1() + " " + game.getLastMove().getCardid2());
-                System.out.println(gameMap.get(gameId).getLastMove().getCardid1() + " " + gameMap.get(gameId).getLastMove().getCardid2());
-            }
+            //System.out.println(gameMap.get(gameId).equals(game));
+           // if(game.getLastMove()!=null) {
+                //System.out.println(game.getLastMove().getCardid1() + " " + game.getLastMove().getCardid2());
+                //System.out.println(gameMap.get(gameId).getLastMove().getCardid1() + " " + gameMap.get(gameId).getLastMove().getCardid2());
+           // }
             wait();
-            System.out.println(gameMap.get(gameId).equals(game));
+            //System.out.println(gameMap.get(gameId).equals(game));
 
         }
 
