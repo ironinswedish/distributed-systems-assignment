@@ -491,17 +491,20 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     @Override
     public HashMap<String, Integer> getRanking(){
-        String query = "SELECT aantalwins,login FROM users";
+        String query = "SELECT aantalwins,aantalverloren,login FROM users";
         HashMap<String, Integer> ranking = new HashMap<>();
         int score;
+        int verloren;
         String username;
 
         try {
             ResultSet rs = st.executeQuery(query);
             while(rs.next()){
             score = rs.getInt("aantalwins");
+            verloren=rs.getInt("aantalverloren");
+            int totalsore=score-verloren;
             username = rs.getString("login");
-            ranking.put(username,score);
+            ranking.put(username,totalsore);
             }
 
         } catch (SQLException e) {
