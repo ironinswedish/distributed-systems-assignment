@@ -88,7 +88,7 @@ MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtoc
     }
 
     //wordt opgeroepen wanneer dispatcher een user wilt doorverbinden naar een applicatieserver
-    //deze methode kunnen we later gebruiken om applicatieservers bij te maken wanneer er iemand bij komt
+    //deze methode kunnen we later gebruiken om applicatieservers bij te maken wanneer er iemand bij komt --> wanneer spel bijkomt
     @Override
     public String[] addUser() throws RemoteException {
         System.out.println("entering addUser");

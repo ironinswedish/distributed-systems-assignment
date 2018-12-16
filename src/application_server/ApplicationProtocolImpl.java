@@ -3,22 +3,23 @@ package application_server;
 import Interfaces.ApplicationProtocol;
 import Interfaces.DataBaseProtocol;
 import shared_objects.Game;
+import shared_objects.Image;
 import shared_objects.Move;
 import shared_objects.Theme;
 
+import java.lang.reflect.Array;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ApplicationProtocolImpl extends UnicastRemoteObject implements ApplicationProtocol {
 
     public static Registry databankServer;
     public static DataBaseProtocol dataTransfer;
+    public static ArrayList<Theme> cachedThemes = new ArrayList<>();
 
     private HashMap<String, Game> gameMap = new HashMap<>();
 
@@ -66,17 +67,17 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
 
     @Override
-    public int changeUsername(String usernameField, String login)throws RemoteException{
-        return dataTransfer.changeUsername(usernameField,login);
+    public int changeUsername(String usernameField, String login,String session)throws RemoteException{
+        return dataTransfer.changeUsername(usernameField,login,session);
     }
 
-    public int changePassword(String newPassword, String login) throws RemoteException{
-        return dataTransfer.changePassword(newPassword,login);
+    public int changePassword(String newPassword, String login,String session) throws RemoteException{
+        return dataTransfer.changePassword(newPassword,login,session);
     }
 
     @Override
-    public double[] getUserStats(String login) throws RemoteException{
-        return  dataTransfer.getUserStats(login);
+    public double[] getUserStats(String login,String session) throws RemoteException{
+        return  dataTransfer.getUserStats(login,session);
     }
 
     @Override
@@ -96,10 +97,33 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     //Game logica********************************************************************************************
     @Override
-    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName) throws RemoteException {
-        Theme chosenTheme = dataTransfer.getTheme(chosenThemeName);
-        Game game = new Game(playerTotal, gridTotal, login, chosenTheme);
-        game = dataTransfer.createGame(game, "server1");
+    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName,String session) throws RemoteException {
+
+        Theme chosenTheme=null;
+        for (Theme theme : cachedThemes) {
+            if(theme.getName().equals(chosenThemeName)){
+                chosenTheme=theme;
+                break;
+            }
+        }
+
+        if(chosenTheme==null){
+            chosenTheme = dataTransfer.getTheme(chosenThemeName);
+            System.out.println("THEME ID: "+chosenTheme.getThemeId());
+
+            //Plus caching van het gekozen theme en zijn afbeeldingen
+            cachedThemes.add(chosenTheme);
+        }
+
+
+
+
+        Game game = new Game(playerTotal, gridTotal, login, chosenTheme.getThemeId(),chosenTheme.getSize());
+        game = dataTransfer.createGame(game, "server1",login,session);
+        if(game==null){
+            return null;
+        }
+
         gameMap.put(game.getGameId(), game);
         System.out.println(game.getGameId());
         return game;
@@ -180,7 +204,11 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
     @Override
-    public Game joinGame(String gameId, String login) throws RemoteException {
+    public Game joinGame(String gameId, String login,String session) throws RemoteException {
+
+        if(!dataTransfer.checkToken(login,session)){
+            return null;
+        }
 
         Game game = gameMap.get(gameId);
 
@@ -247,5 +275,18 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return dataTransfer.getSalt(login);
     }
 
+    @Override
+    public Theme getTheme(int themeId) throws RemoteException{
+        Theme chosenTheme = null;
+        for (Theme theme : cachedThemes) {
+            if(theme.getThemeId()== themeId){
+                chosenTheme=theme;
+                return chosenTheme;
+            }
+        }
+        chosenTheme= dataTransfer.getTheme(themeId);
+        cachedThemes.add(chosenTheme);
+        return chosenTheme;
+    }
 
 }

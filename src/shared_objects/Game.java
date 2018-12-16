@@ -9,7 +9,8 @@ public class Game implements Serializable {
     private String gameId;
     private int playerCount;
     private int spectaterCount;
-    private Theme theme;
+    private int theme;
+    private int themeSize;
     private int turnCount;
     private String[][] cardMatrix;
     private int hostId;
@@ -102,7 +103,7 @@ public class Game implements Serializable {
         this.gameId = gameId;
     }
 
-    public Game(int playerCount, int gridSize, String login, Theme theme) {
+    public Game(int playerCount, int gridSize, String login, int theme,int themeSize) {
         losers = new ArrayList<>();
         winners = new ArrayList<>();
         endResult = new HashMap<>();
@@ -116,6 +117,7 @@ public class Game implements Serializable {
         }
 
         this.theme = theme;
+        this.themeSize=themeSize;
         cardMatrix = new String[gridSize][gridSize];
         playorder = new String[playerCount];
         playorder[0] = login;
@@ -131,7 +133,7 @@ public class Game implements Serializable {
 
     }
 
-    public Theme getTheme() {
+    public int getTheme() {
         return theme;
     }
 
@@ -224,7 +226,6 @@ public class Game implements Serializable {
 
     private void generateThemeSet() {
         Random rand = new Random();
-        int themeSize = theme.getSize();
         Set<Integer> themeSet = new HashSet<Integer>();
         int setSize = cardMatrix.length * cardMatrix.length / 2;
         while (themeSet.size() < setSize) {
@@ -374,6 +375,18 @@ public class Game implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setTheme(int theme) {
+        this.theme = theme;
+    }
+
+    public int getThemeSize() {
+        return themeSize;
+    }
+
+    public void setThemeSize(int themeSize) {
+        this.themeSize = themeSize;
     }
 
     public boolean checkFinished() {

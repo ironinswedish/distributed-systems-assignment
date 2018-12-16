@@ -57,19 +57,25 @@ public class LobbyController extends Controller{
 
     public void enterRankings(){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Rankings.fxml"));
-            AnchorPane pane = loader.load();
-            Controller userStatsController = loader.getController();
-
-            userStatsController.setApplication(application);
-            userStatsController.setDispatcher(dispatch);
-            userStatsController.setSession(session);
-            userStatsController.setLogin(login);
-            userStatsController.setStatus(status);
-            userStatsController.setStage(stage);
 
             //Retrieve the user stats
-            double[] stats =application.getUserStats(login);
+            double[] stats =application.getUserStats(login,session);
+            if(stats[0]==-2){
+                logOut();
+            }
+            else{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Rankings.fxml"));
+            AnchorPane pane = loader.load();
+            Controller rankingsController = loader.getController();
+
+            rankingsController.setApplication(application);
+            rankingsController.setDispatcher(dispatch);
+            rankingsController.setSession(session);
+            rankingsController.setLogin(login);
+            rankingsController.setStatus(status);
+            rankingsController.setStage(stage);
+
+
             loader.getNamespace().put("wins","Wins: "+((int)stats[0]));
             loader.getNamespace().put("draws","Draws: "+((int)stats[1]));
             loader.getNamespace().put("losses","Losses: "+((int)stats[2]));
@@ -92,6 +98,7 @@ public class LobbyController extends Controller{
             });
             Scene scene = new Scene(pane);
             stage.setScene(scene);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -178,6 +185,8 @@ public class LobbyController extends Controller{
         }
 
     }
+
+
 
 
 }

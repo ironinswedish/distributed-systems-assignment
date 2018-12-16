@@ -51,8 +51,11 @@ public class JoinGameController extends Controller {
             join.setOnMouseClicked(e -> {
                 try {
                     System.out.println(gameId);
-                    Game game = application.joinGame(gameId,login);
-
+                    Game game = application.joinGame(gameId,login,session);
+                    if(game==null){
+                        logOut();
+                    }
+                    else{
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("Game.fxml"));
 
                     AnchorPane pane = loader.load();
@@ -85,7 +88,7 @@ public class JoinGameController extends Controller {
                     });
                     Scene scene = new Scene(pane);
                     stage.setScene(scene);
-
+                    }
                 } catch (RemoteException e2) {
                     e2.printStackTrace();
                 } catch (IOException e2) {
@@ -110,6 +113,42 @@ public class JoinGameController extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void logOut() {
+        try {
+
+            application.logout(login, session, false);
+            //dispatch.logout();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+            AnchorPane pane = loader.load();
+            loader.getNamespace().put("status", status);
+
+            Controller loginController = loader.getController();
+            loginController.setApplication(application);
+            loginController.setStatus(status);
+            loginController.setSession(session);
+            loginController.setDispatcher(dispatch);
+            loginController.setStage(stage);
+
+            Scene scene = new Scene(pane);
+            stage.setTitle("Login");
+            stage.setOnCloseRequest(e -> {
+                try {
+
+                    dispatch.logout();
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            });
+            stage.setScene(scene);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void refreshListView(){

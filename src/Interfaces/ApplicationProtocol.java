@@ -21,13 +21,13 @@ public interface ApplicationProtocol extends Remote {
 
     public String respond() throws RemoteException;
 
-    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName) throws RemoteException;
+    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName,String session) throws RemoteException;
 
     public Game processTurn(Move lastmove, String login, String gameId) throws RemoteException;
 
     public Game gameChanged(String gameId) throws RemoteException, InterruptedException;
 
-    public Game joinGame(String gameId, String login) throws RemoteException;
+    public Game joinGame(String gameId, String login,String session) throws RemoteException;
 
     public ArrayList<Game> getPendingGames() throws RemoteException;
 
@@ -37,11 +37,11 @@ public interface ApplicationProtocol extends Remote {
 
     public Game spectateGame(String gameId, String login) throws RemoteException;
 
-    int changeUsername(String usernameField, String login)throws RemoteException;
+    int changeUsername(String usernameField, String login,String session)throws RemoteException;
 
-    int changePassword(String newPassword, String login) throws RemoteException;
+    int changePassword(String newPassword, String login,String session) throws RemoteException;
 
-    double[] getUserStats(String login) throws RemoteException;
+    double[] getUserStats(String login,String session) throws RemoteException;
 
     HashMap<String, Integer> getRanking() throws  RemoteException;
 
@@ -52,4 +52,6 @@ public interface ApplicationProtocol extends Remote {
     List<String> getThemesWithSize(int size) throws RemoteException;
 
     byte[] getSalt(String login) throws RemoteException;
+
+    Theme getTheme(int themeId) throws RemoteException;
 }
