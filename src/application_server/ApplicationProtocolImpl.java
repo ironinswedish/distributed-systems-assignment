@@ -20,6 +20,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     public static Registry databankServer;
     public static DataBaseProtocol dataTransfer;
     public static ArrayList<Theme> cachedThemes = new ArrayList<>();
+    public static ArrayList<Theme> cachedPreviews = new ArrayList<>();
 
     private HashMap<String, Game> gameMap = new HashMap<>();
 
@@ -92,7 +93,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     @Override
     public ArrayList<Theme> getPreviewThemes() throws RemoteException {
-        return dataTransfer.getPreviewThemes();
+        if(cachedPreviews.isEmpty()){
+        ArrayList<Theme> t= dataTransfer.getPreviewThemes();
+        cachedPreviews=t;
+        return t;
+        }
+        else{
+            return cachedPreviews;
+        }
     }
 
     //Game logica********************************************************************************************
