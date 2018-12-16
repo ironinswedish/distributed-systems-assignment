@@ -19,6 +19,7 @@ public class Game implements Serializable {
     private String status;
     private Move lastMove;
     private int currentplayer;
+    private String applicatieServer;
 
     //opbouwen kaartmatrix****************************************************************************
     private ArrayList<Integer> themeArray;
@@ -97,10 +98,11 @@ public class Game implements Serializable {
     }
 
 
-    public Game(String gameId, int playerCount, int currentplayer) {
+    public Game(String gameId, int playerCount, int currentplayer, String applicatieServer) {
         this.currentplayer = currentplayer;
         this.playerCount = playerCount;
         this.gameId = gameId;
+        this.applicatieServer = applicatieServer;
     }
 
     public Game(int playerCount, int gridSize, String login, int theme,int themeSize) {
@@ -324,6 +326,10 @@ public class Game implements Serializable {
         turnCount++;
     }
 
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+
 
     public String[][] getCardMatrix() {
         return cardMatrix;
@@ -421,5 +427,13 @@ public class Game implements Serializable {
 
     public ArrayList<String> getWinners() {
         return winners;
+    }
+
+    public void setApplicatieServer(String applicatieServer) {
+        this.applicatieServer = applicatieServer;
+    }
+
+    public String getApplicatieServer(){
+        return applicatieServer;
     }
 }

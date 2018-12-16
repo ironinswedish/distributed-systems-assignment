@@ -38,6 +38,8 @@ public class Client extends Application {
             dispatch = (DispatchProtocol) dispatcher.lookup("dispatchService");
             String[] applicationAdress = dispatch.getApplicationServer();
             Registry applicationServer = LocateRegistry.getRegistry(applicationAdress[0], Integer.parseInt(applicationAdress[1]));
+            System.out.println(applicationAdress[1]);
+            System.out.println(applicationAdress[0]);
             application = (ApplicationProtocol) applicationServer.lookup("applicationService");
             //System.out.println(application.login("", ""));
             status = "status: connected";

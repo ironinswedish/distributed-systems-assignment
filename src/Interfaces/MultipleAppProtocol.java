@@ -5,10 +5,12 @@ import java.rmi.RemoteException;
 
 public interface MultipleAppProtocol extends Remote {
 
-    public boolean getOnline() throws RemoteException;
-
-    public String[] addUser() throws RemoteException;
+    public String[] addUser(int port, int databasePort) throws RemoteException;
 
     public void removeUser() throws RemoteException;
+
+    public void stopApplicationServer(int port) throws RemoteException;
+
+
 
 }

@@ -1,5 +1,6 @@
 package client;
 
+import Interfaces.ApplicationProtocol;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,7 +16,10 @@ import javafx.stage.Stage;
 import shared_objects.Game;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +43,7 @@ public class SpectateController extends Controller {
         Label players = new Label();
         Button join = new Button();
 
-        HBoxCell(String labelText, String gameId) {
+        HBoxCell(String labelText, String gameId, int port) {
             super();
             players.setText(labelText);
             players.setMaxWidth(Double.MAX_VALUE);
@@ -49,6 +53,12 @@ public class SpectateController extends Controller {
             join.setOnMouseClicked(e -> {
                 try {
                     System.out.println(gameId);
+                    if (application.getOwnPort()!=port) {
+
+                        Registry registry =  LocateRegistry.getRegistry("localhost", port);
+                        application = (ApplicationProtocol) registry.lookup("applicationService");
+
+                    }
                     Game game = application.spectateGame(gameId,login);
 
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("Game.fxml"));
@@ -88,6 +98,8 @@ public class SpectateController extends Controller {
                     e2.printStackTrace();
                 } catch (IOException e2) {
                     e2.printStackTrace();
+                } catch (NotBoundException e1) {
+                    e1.printStackTrace();
                 }
 
             });
@@ -116,10 +128,10 @@ public class SpectateController extends Controller {
             ArrayList<Game> startedGameList = application.getStartedGames();
 
             Game tempGame;
-            for (int i = startedGameList.size()-1; i> 0; i--) {
+            for (int i = startedGameList.size()-1; i> -1; i--) {
                 tempGame = startedGameList.get(i);
-
-                gameList.add(new HBoxCell("players: " + (tempGame.getCurrentplayer()+1) + "/" + tempGame.getPlayerCount() + " ", tempGame.getGameId()));
+                String[] serverName = tempGame.getApplicatieServer().split("-");
+                gameList.add(new HBoxCell("players: " + (tempGame.getCurrentplayer() + 1) + "/" + tempGame.getPlayerCount() + " ", tempGame.getGameId(), Integer.parseInt(serverName[1])));
             }
 
             ObservableList<HBoxCell> myObservableList = FXCollections.observableList(gameList);

@@ -229,7 +229,13 @@ public class GameController extends Controller {
             System.out.println(move.getCardid1() + " " + move.getRow1() + " " + move.getColumn1() + " " + move.getCardid2() + " " + move.getRow2() + " " + move.getColumn2());
             Game tempgame = application.processTurn(move, login, game.getGameId());
             if (tempgame != null) {
-
+                if (tempgame.getStatus().equals("finished")) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("game finished");
+                    alert.showAndWait();
+                }
             } else {
                 System.out.println("not your turn");
             }
@@ -435,8 +441,8 @@ public class GameController extends Controller {
             }
 
         }
-
-       /* public void checkStatus() {
+/*
+       public void checkStatus() {
             if (game.getStatus().equals("finished")) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error message");

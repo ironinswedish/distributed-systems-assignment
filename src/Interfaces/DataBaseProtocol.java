@@ -3,6 +3,7 @@ package Interfaces;
 import shared_objects.Game;
 
 import shared_objects.Theme;
+import shared_objects.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -53,4 +54,26 @@ public interface DataBaseProtocol extends Remote {
     Theme getTheme(int themeId) throws RemoteException;
 
     boolean checkToken(String login, String session) throws RemoteException;
+
+    public void setBackupServer(int port) throws  RemoteException;
+
+    public void placeBackupGame(Game game) throws RemoteException;
+
+    public void getBackupData(int port) throws RemoteException;
+
+    void updateUser(User user) throws RemoteException;
+
+    User getUserPrimary(String login) throws RemoteException;
+
+    Theme getThema(int themaId) throws RemoteException;
+
+    void setPreviewThemes(ArrayList<Theme> previewThemes) throws RemoteException;
+
+    ArrayList<Game> getActiveGames() throws RemoteException;
+
+    ArrayList<Game> getPendingGames() throws RemoteException;
+
+    HashMap<String, Integer> getAllRankings() throws RemoteException;
+
+
 }

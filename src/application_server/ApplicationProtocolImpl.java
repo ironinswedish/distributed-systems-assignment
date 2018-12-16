@@ -2,6 +2,7 @@ package application_server;
 
 import Interfaces.ApplicationProtocol;
 import Interfaces.DataBaseProtocol;
+import Interfaces.DispatchProtocol;
 import shared_objects.Game;
 import shared_objects.Image;
 import shared_objects.Move;
@@ -19,21 +20,33 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     public static Registry databankServer;
     public static DataBaseProtocol dataTransfer;
+    public static DispatchProtocol dispatchProtocol;
     public static ArrayList<Theme> cachedThemes = new ArrayList<>();
     public static ArrayList<Theme> cachedPreviews = new ArrayList<>();
+    public static Registry dispatcher;
+    public static ArrayList<Integer> applicationList;
+    public static int ownPort;
+    public static int databaseport;
+
 
     private HashMap<String, Game> gameMap = new HashMap<>();
 
 
-    public ApplicationProtocolImpl() throws RemoteException {
+    public ApplicationProtocolImpl(ArrayList<Integer> applicationList, int databaseport) throws RemoteException {
+        this.applicationList = applicationList;
+        ownPort = applicationList.get(applicationList.size() - 1);
+        System.out.println(ownPort);
+        this.databaseport = databaseport;
         setupConnection();
+
     }
 
     public void setupConnection() {
         try {
-            databankServer = LocateRegistry.getRegistry("localhost", 1499);
+            databankServer = LocateRegistry.getRegistry("localhost", databaseport);
             dataTransfer = (DataBaseProtocol) databankServer.lookup("dataBaseService");
-
+            dispatcher = LocateRegistry.getRegistry("localhost", 1299);
+            dispatchProtocol = (DispatchProtocol) dispatcher.lookup("dispatchService");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
@@ -62,28 +75,27 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     @Override
     public String[] register(String username, String password, byte[] salt) throws RemoteException {
         System.out.println("username: " + username + "password: " + password);
-        return dataTransfer.registerUser(username, password,salt);
+        return dataTransfer.registerUser(username, password, salt);
     }
-
 
 
     @Override
-    public int changeUsername(String usernameField, String login,String session)throws RemoteException{
-        return dataTransfer.changeUsername(usernameField,login,session);
+    public int changeUsername(String usernameField, String login, String session) throws RemoteException {
+        return dataTransfer.changeUsername(usernameField, login, session);
     }
 
-    public int changePassword(String newPassword, String login,String session) throws RemoteException{
-        return dataTransfer.changePassword(newPassword,login,session);
-    }
-
-    @Override
-    public double[] getUserStats(String login,String session) throws RemoteException{
-        return  dataTransfer.getUserStats(login,session);
+    public int changePassword(String newPassword, String login, String session) throws RemoteException {
+        return dataTransfer.changePassword(newPassword, login, session);
     }
 
     @Override
-    public HashMap<String, Integer> getRanking() throws RemoteException{
-        return dataTransfer.getRanking();
+    public double[] getUserStats(String login, String session) throws RemoteException {
+        return dataTransfer.getUserStats(login, session);
+    }
+
+    @Override
+    public HashMap<String, Integer> getRanking() throws RemoteException {
+        return dataTransfer.getAllRankings();
     }
 
     @Override
@@ -103,37 +115,44 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         }
     }
 
+    @Override
+    public int getOwnPort() {
+        return ownPort;
+    }
+
+
     //Game logica********************************************************************************************
     @Override
-    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName,String session) throws RemoteException {
+    public Game createGame(int playerTotal, String login, int gridTotal, String chosenThemeName, String session) throws RemoteException {
 
-        Theme chosenTheme=null;
+        Theme chosenTheme = null;
         for (Theme theme : cachedThemes) {
-            if(theme.getName().equals(chosenThemeName)){
-                chosenTheme=theme;
+            if (theme.getName().equals(chosenThemeName)) {
+                chosenTheme = theme;
                 break;
             }
         }
 
-        if(chosenTheme==null){
+        if (chosenTheme == null) {
             chosenTheme = dataTransfer.getTheme(chosenThemeName);
-            System.out.println("THEME ID: "+chosenTheme.getThemeId());
+            System.out.println("THEME ID: " + chosenTheme.getThemeId());
 
             //Plus caching van het gekozen theme en zijn afbeeldingen
             cachedThemes.add(chosenTheme);
         }
 
 
-
-
-        Game game = new Game(playerTotal, gridTotal, login, chosenTheme.getThemeId(),chosenTheme.getSize());
-        game = dataTransfer.createGame(game, "server1",login,session);
-        if(game==null){
+        Game game = new Game(playerTotal, gridTotal, login, chosenTheme.getThemeId(), chosenTheme.getSize());
+        game = dataTransfer.createGame(game, "server-"+ownPort, login, session);
+        if (game == null) {
+            System.out.println("deze game is null");
             return null;
         }
 
         gameMap.put(game.getGameId(), game);
         System.out.println(game.getGameId());
+
+        dispatchProtocol.incrementGame(ownPort);
         return game;
     }
 
@@ -150,12 +169,12 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
                 game.getCardMatrix()[lastMove.getRow2()][lastMove.getColumn2()] = "1" + String.valueOf(lastMove.getCardid2());
                 game.increaseScore();
 
-            }else{
+            } else {
                 game.increasePlayer();
             }
 
             System.out.println(game.cardMatrixToString());
-            System.out.println(lastMove.getCardid1()+" "+lastMove.getCardid2());
+            System.out.println(lastMove.getCardid1() + " " + lastMove.getCardid2());
             game.setLastMove(lastMove);
             game.increaseTurnCount();
 
@@ -181,6 +200,9 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
                     dataTransfer.addWin(game.getWinners().get(0));
                 }
+                dataTransfer.updateGame(game);
+                dispatchProtocol.decreaseGame(ownPort, databaseport);
+                gameMap.remove(game.getGameId());
             }
 
             dataTransfer.updateGame(game);
@@ -192,19 +214,19 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     @Override
     public synchronized Game gameChanged(String gameId) throws RemoteException, InterruptedException {
-        //System.out.println("gamechanged aangevraagd");
+        System.out.println("gamechanged aangevraagd");
         Game game = new Game(gameMap.get(gameId));
-        //if(game.getLastMove()!=null){
-            //System.out.println(game.getLastMove().getCardid1()+" "+game.getLastMove().getCardid2());
-        //}
-        while(gameMap.get(gameId).equals(game)){
-            //System.out.println(gameMap.get(gameId).equals(game));
-           // if(game.getLastMove()!=null) {
-                //System.out.println(game.getLastMove().getCardid1() + " " + game.getLastMove().getCardid2());
-                //System.out.println(gameMap.get(gameId).getLastMove().getCardid1() + " " + gameMap.get(gameId).getLastMove().getCardid2());
-           // }
+        if (game.getLastMove() != null) {
+            System.out.println(game.getLastMove().getCardid1() + " " + game.getLastMove().getCardid2());
+        }
+        while (gameMap.get(gameId).equals(game)) {
+            System.out.println(gameMap.get(gameId).equals(game));
+            if (game.getLastMove() != null) {
+                System.out.println(game.getLastMove().getCardid1() + " " + game.getLastMove().getCardid2());
+                System.out.println(gameMap.get(gameId).getLastMove().getCardid1() + " " + gameMap.get(gameId).getLastMove().getCardid2());
+            }
             wait();
-            //System.out.println(gameMap.get(gameId).equals(game));
+            System.out.println(gameMap.get(gameId).equals(game));
 
         }
 
@@ -212,9 +234,9 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
     @Override
-    public Game joinGame(String gameId, String login,String session) throws RemoteException {
+    public Game joinGame(String gameId, String login, String session) throws RemoteException {
 
-        if(!dataTransfer.checkToken(login,session)){
+        if (!dataTransfer.checkToken(login, session)) {
             return null;
         }
 
@@ -240,59 +262,61 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
         return game;
     }
+
     @Override
     public ArrayList<Game> getPendingGames() throws RemoteException {
-        return dataTransfer.getGamesWithStatus("pending");
+        return dataTransfer.getPendingGames();
     }
 
     public ArrayList<Game> getStartedGames() throws RemoteException {
-        return dataTransfer.getGamesWithStatus("started");
+        return dataTransfer.getActiveGames();
     }
 
     @Override
     public void quitGame(Game game, String login) throws RemoteException {
         Game game2 = gameMap.get(game.getGameId());
-        game2.removeUser(login);
+        if(game2!=null) {
+            game2.removeUser(login);
 
-        dataTransfer.updateGame(game2);
-        dataTransfer.addLoss(login);
-        notifyOtherPlayers(game2);
+            dataTransfer.updateGame(game2);
+            dataTransfer.addLoss(login);
+            notifyOtherPlayers(game2);
 
-
+        }
     }
 
     @Override
-    public List<String> getThemesWithSize(int size) throws RemoteException{
-        System.out.println("Size is; "+size);
-        List<String> getThemesWithSize= dataTransfer.getThemesWithSize(size);
-        System.out.println("Size van lijst is: "+getThemesWithSize.size());
+    public List<String> getThemesWithSize(int size) throws RemoteException {
+        System.out.println("Size is; " + size);
+        List<String> getThemesWithSize = dataTransfer.getThemesWithSize(size);
+        System.out.println("Size van lijst is: " + getThemesWithSize.size());
         return getThemesWithSize;
     }
 
 
     private synchronized void notifyOtherPlayers(Game game) {
         //for (int i = 0; i < game.getCurrentplayer()+1; i++) {
-            notifyAll();
+        notifyAll();
         System.out.println("notify");
-       // }
+        // }
 
     }
 
     @Override
-    public byte[] getSalt(String login) throws RemoteException{
+    public byte[] getSalt(String login) throws RemoteException {
         return dataTransfer.getSalt(login);
     }
 
     @Override
-    public Theme getTheme(int themeId) throws RemoteException{
+    public Theme getTheme(int themeId) throws RemoteException {
         Theme chosenTheme = null;
         for (Theme theme : cachedThemes) {
-            if(theme.getThemeId()== themeId){
-                chosenTheme=theme;
+            if (theme.getThemeId() == themeId) {
+                chosenTheme = theme;
                 return chosenTheme;
             }
         }
-        chosenTheme= dataTransfer.getTheme(themeId);
+        chosenTheme = dataTransfer.getTheme(themeId);
         cachedThemes.add(chosenTheme);
         return chosenTheme;
     }

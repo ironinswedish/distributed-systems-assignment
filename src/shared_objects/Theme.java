@@ -36,6 +36,12 @@ public class Theme implements Serializable {
 
     }
 
+    public Theme(int themeId, int size, String themName) {
+        this.themeId = themeId;
+        this.size = size;
+        this.name = themName;
+    }
+
     public Theme(int id,String themeName, int size, HashMap<String,byte[]> cards){
         themeId=id;
         name=themeName;
@@ -44,6 +50,10 @@ public class Theme implements Serializable {
 
         System.out.println(cardMap.size()+ " zoveel kaarten zitten er in de theme met size: "+size);
 
+    }
+
+    public void setCardMap(HashMap<String, byte[]> cardMap) {
+        this.cardMap = cardMap;
     }
 /*
     public void setCards(){

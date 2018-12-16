@@ -54,4 +54,6 @@ public interface ApplicationProtocol extends Remote {
     byte[] getSalt(String login) throws RemoteException;
 
     Theme getTheme(int themeId) throws RemoteException;
+
+    int getOwnPort() throws RemoteException;
 }

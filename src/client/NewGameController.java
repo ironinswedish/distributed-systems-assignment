@@ -90,6 +90,7 @@ public class NewGameController extends Controller {
             Game game = application.createGame(Integer.parseInt(playerTotal), login, Integer.parseInt(gridTotal), choiceBox.getValue(),session);
 
             if(game==null){
+                System.out.println("game is null");
                 logOut();
             }
             else{

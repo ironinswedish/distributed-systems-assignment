@@ -68,19 +68,21 @@ public class LoginController extends Controller{
 
             byte[] salt =application.getSalt(login);
 
+            if(salt!=null) {
+                String hashedPassword = getSecurePassword(password.getText(), salt);
 
-            String hashedPassword = getSecurePassword(password.getText(),salt);
-
-            System.out.println(salt);
-            System.out.println(hashedPassword);
-            String[] result = application.login(login, hashedPassword,session);
-            session = result[1];
-            if (result[0].equals("ok")) {
-                enterLobby();
-            } else {
-                errorMessage(result[0]);
+                System.out.println(salt);
+                System.out.println(hashedPassword);
+                String[] result = application.login(login, hashedPassword, session);
+                session = result[1];
+                if (result[0].equals("ok")) {
+                    enterLobby();
+                } else {
+                    errorMessage(result[0]);
+                }
+            } else{
+                errorMessage("username does not exist");
             }
-
         } catch (RemoteException e) {
             e.printStackTrace();
         }

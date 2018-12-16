@@ -1,5 +1,6 @@
 package application_server;
 
+import Interfaces.DispatchProtocol;
 import Interfaces.MultipleAppProtocol;
 
 import java.rmi.NotBoundException;
@@ -8,58 +9,69 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /*
 protocol verantwoordelijk voor communicatie tussen ApplicationServers
  */
-public class
-MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtocol {
+public class MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtocol {
 
-    private boolean online = false;
     private int userCount;
+    private Registry dispatcher;
     private Registry registry;
     private String[] applicationServer;
+    private HashMap<Integer, Registry> appserverMap = new HashMap<>();
+    private DispatchProtocol dispatchProtocol;
+
+    private ArrayList<Integer> onlinePorts = new ArrayList<>();
+
 
     protected MultipleAppProtocolImpl() throws RemoteException {
 
     }
 
-
-    // kijken of server online is
-    @Override
-    public boolean getOnline() throws RemoteException {
-        return online;
-    }
-
     // startApplicationSevrever en stopApplicationServer zijn methodes voor het dynamisch bij creeren van appServers wanneer we gedistrubueerd gaan werken
     //deze methode start de effectieve applicatieServer op een andere poort
     //zet de host en het addres vast
-    private String[] startApplicationServer() throws RemoteException {
-        String port = "1350";
+    private String[] startApplicationServer(int port,int databasePort) throws RemoteException {
+
+        String serverport = ""+port;
         String host = "localhost";
         applicationServer = new String[2];
         applicationServer[0] = "";
         applicationServer[1] = "";
         boolean bound = false;
         try {
-            if (registry == null) {
-                registry = LocateRegistry.createRegistry(Integer.parseInt(port));
-            }
+
            /* String[] serviceList = registry.list();
             for (int i = 0; i < serviceList.length; i++) {
                 if (serviceList[i].equals("applicationService")) {
                     bound = true;
                 }
             }*/
-            if (!online) {
-                registry.rebind("applicationService", new ApplicationProtocolImpl());
+            try {
+                if (onlinePorts.isEmpty()) {
+                    dispatcher = LocateRegistry.getRegistry("localhost", 1299);
+                    dispatchProtocol = (DispatchProtocol) dispatcher.lookup("dispatchService");
+                }
+                if (!onlinePorts.contains(port)) {
+                    System.out.println("port = " + port);
+                    registry = LocateRegistry.createRegistry(port);
+                    registry.rebind("applicationService", new ApplicationProtocolImpl(dispatchProtocol.registerApp(port),databasePort));
+                    onlinePorts.add(port);
+                    appserverMap.put(port, registry);
+                } else {
+
+                }
+            } catch (NotBoundException e) {
+                e.printStackTrace();
             }
 
-
             applicationServer[0] = host;
-            applicationServer[1] = port;
+            applicationServer[1] = serverport;
 
-            online = true;
+
             System.out.println("ApplicationService online");
         } catch (RemoteException e) {
             //e.printStackTrace();
@@ -71,12 +83,14 @@ MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtoc
     }
 
     //zet de effectieve applicatieserver uit
-    private void stopApplicationServer() throws RemoteException {
+    @Override
+    public void stopApplicationServer(int port) throws RemoteException {
         try {
-            if (registry != null) {
+            if (onlinePorts.contains(port)) {
+                registry = appserverMap.get(port);
                 System.out.println("shutting down applicationserver");
                 registry.unbind("applicationService");
-                online = false;
+                appserverMap.remove(port);
             }
         } catch (NotBoundException e) {
             //e.printStackTrace();
@@ -90,11 +104,11 @@ MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtoc
     //wordt opgeroepen wanneer dispatcher een user wilt doorverbinden naar een applicatieserver
     //deze methode kunnen we later gebruiken om applicatieservers bij te maken wanneer er iemand bij komt --> wanneer spel bijkomt
     @Override
-    public String[] addUser() throws RemoteException {
+    public String[] addUser(int port, int databasePort) throws RemoteException {
         System.out.println("entering addUser");
 
 
-        startApplicationServer();
+        startApplicationServer(port,databasePort);
 
         userCount++;
         System.out.println(userCount);
@@ -107,9 +121,6 @@ MultipleAppProtocolImpl extends UnicastRemoteObject implements MultipleAppProtoc
     public void removeUser() throws RemoteException {
         System.out.println("user left multipleApp");
         userCount--;
-        if (userCount < 1) {
-            stopApplicationServer();
-        }
         System.out.println(userCount);
 
 
