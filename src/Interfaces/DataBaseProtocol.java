@@ -75,5 +75,7 @@ public interface DataBaseProtocol extends Remote {
 
     HashMap<String, Integer> getAllRankings() throws RemoteException;
 
+    void initialSetup() throws RemoteException;
+
 
 }

@@ -55,11 +55,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         SERVERNAME = "database" + dblist.size();
         ownPort = dblist.get(dblist.size() - 1);
         setupConnection();
-        if (dblist.size() > 1) {
-            System.out.println("entered");
-            getDataToBackup();
-            notifyPreviousDB();
-        }
+
 
 
         //codevoorbeeld voor periodieke taak uit te voeren zoals updaten database
@@ -90,8 +86,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
                 System.out.println(ownPort);
                 url = "jdbc:sqlite:memorydb2.sqlite";
             } else if(ownPort == 14000){
+                System.out.println(ownPort);
                 url = "jdbc:sqlite:memorydb.sqlite";
             } else {
+                System.out.println(ownPort);
                 url = "jdbc:sqlite:memorydb3.sqlite";
             }
 
@@ -108,11 +106,22 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     //database logica**************************************************************************************
 
     /**
+     * communicatie met meerdere db's opzetten
+     */
+    @Override
+    public void initialSetup(){
+        if (databaseList.size() > 1) {
+            getDataToBackup();
+            notifyPreviousDB();
+        }
+    }
+    /**
      * de eerste database in de database lijst wordt de nieuwe backupdatabase. Deze database bevat mogelijk al data van de voorlaatste database
      * omdat de voorlaatste database nu zijn data moet backuppen in deze database zal deze backupdata verplaatst worden naar deze database
      * dit gebeurt hier
      */
     private void getDataToBackup() {
+        System.out.println("called");
         backupserver = databaseList.get(0);
         try {
             databaseRegistry = LocateRegistry.getRegistry("localhost", backupserver);
@@ -129,9 +138,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
      * de voorlaatste database wordt ingelicht dat deze nu een nieuwe database heeft. namelijk deze
      */
     private void notifyPreviousDB() {
-        servertobackup = databaseList.get(databaseList.size() - 1);
+        System.out.println("this one as well");
+        servertobackup = databaseList.get(databaseList.size() - 2);
         try {
             databaseRegistry = LocateRegistry.getRegistry("localhost", servertobackup);
+            System.out.println(servertobackup);
             databaseRegistryMap.put(servertobackup, (DataBaseProtocol) databaseRegistry.lookup("dataBaseService"));
             databaseRegistryMap.get(servertobackup).setBackupServer(ownPort);
         } catch (RemoteException e) {
@@ -148,10 +159,14 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
      */
     @Override
     public void setBackupServer(int port) {
+        System.out.println("bane of my existence");
         backupserver = port;
         try {
-            databaseRegistry = LocateRegistry.getRegistry("localhost", port);
-            databaseRegistryMap.put(port, (DataBaseProtocol) databaseRegistry.lookup("dataBaseService"));
+            if(backupserver!=servertobackup) {
+                databaseRegistry = LocateRegistry.getRegistry("localhost", port);
+                System.out.println(port + "backupserver");
+                databaseRegistryMap.put(port, (DataBaseProtocol) databaseRegistry.lookup("dataBaseService"));
+            }
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -169,7 +184,8 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     public void getBackupData(int port) {
         servertobackup = port;
         try {
-            databaseRegistry = LocateRegistry.getRegistry("localhost", servertobackup);
+            databaseRegistry = LocateRegistry.getRegistry( servertobackup);
+            System.out.println("servertobackup" + servertobackup);
             databaseRegistryMap.put(servertobackup, (DataBaseProtocol) databaseRegistry.lookup("dataBaseService"));
 
             Game game;
@@ -1433,7 +1449,7 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
     }

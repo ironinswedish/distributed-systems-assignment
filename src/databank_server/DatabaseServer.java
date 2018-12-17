@@ -1,5 +1,6 @@
 package databank_server;
 
+import Interfaces.DataBaseProtocol;
 import Interfaces.DispatchProtocol;
 import dispatcher.DispatchProtocolImpl;
 
@@ -15,6 +16,7 @@ public class DatabaseServer {
     static DispatchProtocol dispatch;
     static int port;
     static ArrayList<Integer> databaseList;
+    static DataBaseProtocol dataprot;
 
     public static void start() {
         try {
@@ -23,7 +25,10 @@ public class DatabaseServer {
             databaseList = dispatch.registerDB();
             port = databaseList.get(databaseList.size() - 1);
             Registry registry = LocateRegistry.createRegistry(port);
+            System.out.println("registered database to port" + port);
             registry.rebind("dataBaseService", new DataBaseProtocolImpl(databaseList));
+            dataprot = (DataBaseProtocol) registry.lookup("dataBaseService");
+            dataprot.initialSetup();
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
