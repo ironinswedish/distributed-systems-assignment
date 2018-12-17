@@ -27,6 +27,12 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
 
     public DispatchProtocolImpl() throws RemoteException {}
 
+    /**
+     * aanmaken van applicatieserver of toekennen van bestepassende applicatieserver aan client
+     * een lijst met de host en het poortnummer wordt teruggestuurd naar de client.
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String[] getApplicationServer() throws RemoteException {
         String[] applicationServer = new String[2];
@@ -54,6 +60,10 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         return applicationServer;
     }
 
+    /**
+     * uitloggen
+     * @throws RemoteException
+     */
     @Override
     public void logout() throws RemoteException {
 
@@ -67,6 +77,10 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         }
     }
 
+    /**
+     * wanneer een database aangemaakt wordt moet deze zich hier registreren en krijgt deze een poortnummer om op te werken en een lijst met alle andere databaseservers
+     * @return
+     */
     @Override
     public ArrayList<Integer> registerDB(){
         dblist.add(startDBPort);
@@ -75,6 +89,11 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         return dblist;
     }
 
+    /**
+     * de appserver kan registreert zich bij het aanmaken en krijgt een lijst met alle appserverpoorten terug.
+     * @param port
+     * @return
+     */
     @Override
     public ArrayList<Integer> registerApp(int port){
         applicationlist.add(port);
@@ -82,6 +101,10 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         return applicationlist;
     }
 
+    /**
+     * wanneer een game aangemaakt wordt in de appserver wordt de dispatcher hiervan verwittigd
+     * @param appPort
+     */
     @Override
     public void incrementGame(int appPort) {
         int currentcount = gameCount.get(appPort);
@@ -89,6 +112,11 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         gameCount.replace(appPort, currentcount);
     }
 
+    /**
+     * wanneer een game gedaan is wordt de appserver verwittigd
+     * @param appPort
+     * @param dbPort
+     */
     @Override
     public void decreaseGame(int appPort, int dbPort) {
         int currentcount = gameCount.get(appPort);
@@ -106,6 +134,10 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         }
     }
 
+    /**
+     * ophalen van beste appserver poortnummer gebasseerd op aantal games elke server bevat
+     * @return
+     */
     public int getBestApp() {
         int port = 0;
         int min = Integer.MAX_VALUE;
@@ -125,6 +157,10 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         return port;
     }
 
+    /**
+     * beste databasepoortnummer meegeven gebaseerd op database met minste appservers
+     * @return
+     */
     public int getBestDB(){
         int port = 0;
         int min = Integer.MAX_VALUE;

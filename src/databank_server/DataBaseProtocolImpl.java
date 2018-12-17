@@ -44,7 +44,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     static ArrayList<String> backupGames = new ArrayList<>();
     static ArrayList<Integer> availableThemas = new ArrayList<>();
 
-
+    /**
+     * constructor neemt een lijst met alle bestaande poorten voor de ander databases op
+     * hier wordt ook de servername vastgelegd en worden connecties voor de backups vastgelegd
+     * @param dblist
+     * @throws RemoteException
+     */
     public DataBaseProtocolImpl(ArrayList<Integer> dblist) throws RemoteException {
         databaseList = dblist;
         SERVERNAME = "database" + dblist.size();
@@ -73,17 +78,21 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
-
+    /**
+     * opzetten connectie voor database en server.
+     */
     private void setupConnection() {
         conn = null;
         try {
             //url (pad) naar .sqlite database
             String url;
-            if (ownPort > 14000) {
+            if (ownPort == 14001) {
                 System.out.println(ownPort);
                 url = "jdbc:sqlite:memorydb2.sqlite";
-            } else {
+            } else if(ownPort == 14000){
                 url = "jdbc:sqlite:memorydb.sqlite";
+            } else {
+                url = "jdbc:sqlite:memorydb3.sqlite";
             }
 
 
@@ -98,6 +107,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
     //database logica**************************************************************************************
 
+    /**
+     * de eerste database in de database lijst wordt de nieuwe backupdatabase. Deze database bevat mogelijk al data van de voorlaatste database
+     * omdat de voorlaatste database nu zijn data moet backuppen in deze database zal deze backupdata verplaatst worden naar deze database
+     * dit gebeurt hier
+     */
     private void getDataToBackup() {
         backupserver = databaseList.get(0);
         try {
@@ -111,6 +125,9 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * de voorlaatste database wordt ingelicht dat deze nu een nieuwe database heeft. namelijk deze
+     */
     private void notifyPreviousDB() {
         servertobackup = databaseList.get(databaseList.size() - 1);
         try {
@@ -125,6 +142,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * deze methode wordt opgeroepen in de database die een nieuwe backup krijgt, deze zet de connectie met de nieuwe backup goed
+     * @param port
+     */
     @Override
     public void setBackupServer(int port) {
         backupserver = port;
@@ -140,11 +161,17 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * data van de oude backup wordt hier naar de nieuwe backupdatabase verplaatst
+     * @param port
+     */
     @Override
     public void getBackupData(int port) {
         servertobackup = port;
         try {
             databaseRegistry = LocateRegistry.getRegistry("localhost", servertobackup);
+            databaseRegistryMap.put(servertobackup, (DataBaseProtocol) databaseRegistry.lookup("dataBaseService"));
+
             Game game;
             for (String gameId : backupGames) {
                 game = getGameById(gameId);
@@ -154,10 +181,17 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
             databaseRegistryMap.get(port).setPreviewThemes(getPreviewThemes());
         } catch (RemoteException e) {
             e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
         }
 
     }
 
+    /**
+     * ophalen game via id
+     * @param id
+     * @return
+     */
     private Game getGameById(String id) {
         String query = "SELECT aantalspelers, themaid, zetnr, kaartlayout, volgorde, scores, applicationserver, status, currentplayer FROM spellen WHERE global_spelid ='" + id + "'";
         try {
@@ -179,12 +213,20 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * wordt opgeroepen op de backpserver en plaatst de game in deze database
+     * @param game
+     */
     @Override
     public void placeBackupGame(Game game) {
         backupGames.add(game.getGameId());
         createBackupGame(game);
     }
 
+    /**
+     * ophalen van gebruiker uit hoofddatabase
+     * @param login
+     */
     private void getUserFromPrimary(String login) {
         User user = null;
         DataBaseProtocol dataprotocol;
@@ -214,6 +256,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * verplaatsen van gebruiker indien deze server de vorige hoofddatabase was van de gebruiker
+     * deze gebruiker wordt nu uit de lijst verwijderd van recentste updates
+     * @param login
+     * @return
+     */
     @Override
     public User getUserPrimary(String login) {
         User user = null;
@@ -224,6 +272,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return user;
     }
 
+    /**
+     * updaten van user gegevens
+     * @param user
+     */
     @Override
     public void updateUser(User user) {
         String upd = "UPDATE users SET login=?, paswoord = ?, token =?, sessiontime = ?, loggedin = ?, aantalwins =?, aantalgelijk =?, aantalverloren = ?, salt =?";
@@ -246,6 +298,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * deze functie controleert of een volledig thema aanwezig is in de database en stuurt deze door
+     * @param themaId
+     * @return
+     */
     @Override
     public Theme getThema(int themaId) {
         try {
@@ -258,6 +315,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * hier wordt gecontroleerd of het thema van een game aanwezig is in de database
+     * zo niet dan wordt het thema gehaald uit de eerste database met dit thema
+     * @param themaId
+     */
     private void checkTheme(int themaId) {
         DataBaseProtocol dataprot;
         Theme theme;
@@ -289,6 +351,9 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
     //User logica********************************************************************************************************//
+    /**
+     * token op null zette
+     */
     private void resetToken(int userid) throws SQLException {
         String upd = "UPDATE users SET token = ?,sessiontime = ? WHERE userid = ? ";
 
@@ -300,6 +365,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * loggedin boolean aanpassen
+     * @param userid
+     * @throws SQLException
+     */
     private void setOffline(int userid) throws SQLException {
         String upd = "UPDATE users SET loggedin = ? WHERE userid = ? ";
         PreparedStatement prst = conn.prepareStatement(upd);
@@ -310,39 +380,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
-    private void incrementSession(int userid, int time) throws SQLException {
-        String upd = "UPDATE users SET sessiontime = ? WHERE userid = ? ";
-
-        PreparedStatement prst = conn.prepareStatement(upd);
-        prst.setInt(1, time + 1);
-        prst.setInt(2, userid);
-        prst.executeUpdate();
-    }
-
-    //wordt (nog) niet gebruikt
-    private static String getUsers() {
-        String query = "SELECT * FROM users";
-        try {
-            ResultSet rs = st.executeQuery((query));
-            return rs.getInt("userid") + "name: " + rs.getString("login") + "pasword: " + rs.getString("paswoord");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "query failed";
-
-    }
-
-    //wordt (nog) niet gebruikt -> veilig afsluiten databaseserver
-    private static void end() {
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
+    /**
+     * user ophalen via zijn login
+     * @param login
+     * @return
+     */
     private User getUser(String login) {
         String query = "SELECT * FROM users WHERE login = '" + login + "'";
 
@@ -356,6 +398,14 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * inloggen
+     * @param username
+     * @param password
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String[] login(String username, String password, String session) throws RemoteException {
         String[] result = new String[2];
@@ -408,6 +458,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return result;
     }
 
+    /**
+     * jwt token genereren
+     * @param username
+     * @return
+     * @throws SQLException
+     */
     private String generateKey(String username) throws SQLException {
         String key = createJWT(username);
         String upd = "UPDATE users SET token = ?,sessiontime = ? WHERE login = ? ";
@@ -422,6 +478,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return key;
     }
 
+    /**
+     * loggedin boolean op true plaatsen
+     * @param session
+     * @throws SQLException
+     */
     private void setUserOnline(String session) throws SQLException {
         String upd = "UPDATE users SET loggedin = ? WHERE token = ? ";
 
@@ -431,7 +492,13 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         prst.executeUpdate();
     }
 
-
+    /**
+     * registreren
+     * @param username
+     * @param hashedPassword
+     * @param salt
+     * @return
+     */
     @Override
     public String[] registerUser(String username, String hashedPassword, byte[] salt) {
         String[] result = new String[2];
@@ -471,6 +538,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * salt opvragen
+     * @param login
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public byte[] getSalt(String login) throws RemoteException {
         getUserFromPrimary(login);
@@ -490,6 +563,13 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * uitloggen
+     * @param login
+     * @param session
+     * @param xButton
+     * @throws RemoteException
+     */
     @Override
     public void logout(String login, String session, boolean xButton) throws RemoteException {
         System.out.println("user logged out");
@@ -517,6 +597,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * controleren of gebruiker aanwezig is return true indien user niet bestaat
+     * @param username
+     * @return
+     */
     //returns true indien user niet bestaat
     private boolean checkUser(String username) {
         String query = "SELECT login FROM users WHERE login ='" + username + "'";
@@ -529,6 +614,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return false;
     }
 
+    /**
+     * thema opvragen via naam van thema
+     * @param themeName
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Theme getTheme(String themeName) throws RemoteException {
 
@@ -547,6 +638,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * thema opvragen via id
+     * @param themeId
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Theme getTheme(int themeId) throws RemoteException {
         checkTheme(themeId);
@@ -586,6 +683,14 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * username verandere
+     * @param usernameField
+     * @param login
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public int changeUsername(String usernameField, String login, String session) throws RemoteException {
         getUserFromPrimary(usernameField);
@@ -628,6 +733,14 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * passwoord veranderen
+     * @param newPassword
+     * @param login
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public int changePassword(String newPassword, String login, String session) throws RemoteException {
         getUserFromPrimary(login);
@@ -661,6 +774,14 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+
+    /**
+     * gebruikerstatistieken ophalen
+     * @param login
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     public double[] getUserStats(String login, String session) throws RemoteException {
         double[] stats = {0, 0, 0};
         /*
@@ -692,6 +813,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return stats;
     }
 
+    /**
+     * ophalen van alle rankings van over alle databases
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public HashMap<String, Integer> getAllRankings() throws RemoteException {
         HashMap<String, Integer> ranking = getRanking();
@@ -713,6 +839,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return ranking;
     }
 
+    /**
+     * ophalen van alle rankings van de users in de primarylist
+     * @return
+     */
     @Override
     public HashMap<String, Integer> getRanking() {
         String query = "SELECT aantalwins,aantalverloren,login FROM users";
@@ -745,6 +875,13 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return ranking;
     }
 
+    /**
+     * controle of token geldig is
+     * @param login
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     public boolean checkToken(String login, String session) throws RemoteException {
         try {
             Jws<Claims> jws = Jwts.parser().setSigningKey("pokemon1").parseClaimsJws(session);
@@ -760,6 +897,16 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
     //Game Logica ****************************************************************************************//
+
+    /**
+     * aanmaken game en backup maken
+     * @param game
+     * @param appserver
+     * @param login
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Game createGame(Game game, String appserver, String login, String session) throws RemoteException {
 
@@ -816,6 +963,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
 
+    /**
+     * aanmaken backup van game
+     * @param game
+     */
     private void createBackupGame(Game game) {
 
         int aantalspelers = game.getPlayerCount();
@@ -858,6 +1009,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * game updaten
+     * @param game
+     * @throws RemoteException
+     */
     @Override
     public void updateGame(Game game) throws RemoteException {
         String upd = "UPDATE spellen SET aantalSpelers = ?, aantalspectaters = ?, zetnr = ?,volgorde = ?, kaartlayout = ?, scores = ?, currentplayer = ?,status = ? WHERE global_spelid= ?";
@@ -915,6 +1071,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * ophalen van alle games die nog wacthen op extra spelers.
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Game> getPendingGames() throws RemoteException {
         ArrayList<Game> pendingGames = getGamesWithStatus("pending");
@@ -940,6 +1101,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return pendingGames;
     }
 
+    /**
+     * ophalen alle games die al bezig zijn
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Game> getActiveGames() throws RemoteException {
         ArrayList<Game> activeGames = getGamesWithStatus("started");
@@ -965,6 +1131,13 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return activeGames;
     }
 
+
+    /**
+     * ophalen games die aan status voldoen
+     * @param status
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Game> getGamesWithStatus(String status) throws RemoteException {
         String query = "SELECT global_spelid, aantalspelers, currentplayer,applicationserver FROM spellen WHERE status ='" + status + "'";
@@ -987,6 +1160,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * verlies toevoegen aan gebruiker
+     * @param login
+     * @throws RemoteException
+     */
     @Override
     public void addLoss(String login) throws RemoteException {
         getUserFromPrimary(login);
@@ -1009,6 +1187,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+
+    /**
+     * winst toevoegen aan gebruiker
+     * @param login
+     * @throws RemoteException
+     */
     @Override
     public void addWin(String login) throws RemoteException {
         getUserFromPrimary(login);
@@ -1031,6 +1215,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * gelijkspel toevoegen aan gebruiker
+     * @param login
+     * @throws RemoteException
+     */
     @Override
     public void addDraw(String login) throws RemoteException {
         getUserFromPrimary(login);
@@ -1053,6 +1242,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * ophalen van alle thema namen
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<String> getThemeNames() throws RemoteException {
         String get = "select beschrijving from thema";
@@ -1072,6 +1266,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return null;
     }
 
+    /**
+     * ophalen van alle previews
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Theme> getPreviewThemes() throws RemoteException {
         String getId = "SELECT themaid, aantalpics, beschrijving FROM thema";
@@ -1111,6 +1310,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
     }
 
 
+    /**
+     * gameid aanpassen van een game zodat deze uniek blijft over alle databases
+     * @param game
+     * @param appserver
+     * @return
+     */
     private Game setId(Game game, String appserver) {
         String get = "select seq from sqlite_sequence where name = \"spellen\"";
         String upd = "UPDATE spellen SET global_spelid = ? WHERE spelid= ? ";
@@ -1143,6 +1348,12 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return game;
     }
 
+    /**
+     * thema's ophalen met minimum grootte
+     * @param size
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public List<String> getThemesWithSize(int size) throws RemoteException {
         List<String> themas = new ArrayList<>();
@@ -1163,6 +1374,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * maken jwt token
+     * @param username
+     * @return
+     */
     public String createJWT(String username) {
 
         Calendar cal = Calendar.getInstance(); // creates calendar
@@ -1174,6 +1390,11 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         return compactJws;
     }
 
+    /**
+     * previewThemas in database steken
+     * @param previewthemes
+     * @throws RemoteException
+     */
     @Override
     public void setPreviewThemes(ArrayList<Theme> previewthemes) throws RemoteException {
         for (Theme thema : previewthemes) {
@@ -1181,6 +1402,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * thema in database steken
+     * @param theme
+     */
     private void setTheme(Theme theme) {
 
         String insThema = "INSERT INTO thema(themaid,aantalpics,beschrijving) Values(?,?,?)";
@@ -1213,6 +1438,10 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
 
     }
 
+    /**
+     * foto's updaten in database
+     * @param theme
+     */
     private void updatePics(Theme theme) {
         String insPics = "INSERT INTO picture(themaid,name,number,picnumber) values(?,?,?,?)";
 
@@ -1232,6 +1461,9 @@ public class DataBaseProtocolImpl extends UnicastRemoteObject implements DataBas
         }
     }
 
+    /**
+     * thread verantwoordelijk voor het updaten van backups in de achtergrond
+     */
     public class BackupChangeThread implements Runnable {
 
         String login;

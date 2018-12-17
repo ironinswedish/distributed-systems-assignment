@@ -156,6 +156,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return game;
     }
 
+    /**
+     * verwerken zet
+     * @param lastMove
+     * @param login
+     * @param gameId
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Game processTurn(Move lastMove, String login, String gameId) throws RemoteException {
         Game game = gameMap.get(gameId);
@@ -212,6 +220,13 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return null;
     }
 
+    /**
+     * blocking methode die controleert of een game gewijzigd is en vervolgens een signaal stuurt
+     * @param gameId
+     * @return
+     * @throws RemoteException
+     * @throws InterruptedException
+     */
     @Override
     public synchronized Game gameChanged(String gameId) throws RemoteException, InterruptedException {
         System.out.println("gamechanged aangevraagd");
@@ -233,6 +248,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return gameMap.get(gameId);
     }
 
+    /**
+     * client met game laten meespelen
+     * @param gameId
+     * @param login
+     * @param session
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Game joinGame(String gameId, String login, String session) throws RemoteException {
 
@@ -252,6 +275,13 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return game;
     }
 
+    /**
+     * client laten meekijken met game
+     * @param gameId
+     * @param login
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Game spectateGame(String gameId, String login) throws RemoteException {
         Game game = gameMap.get(gameId);
@@ -263,15 +293,31 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         return game;
     }
 
+    /**
+     * alle games die extra spelers nodig hebben ophalen
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Game> getPendingGames() throws RemoteException {
         return dataTransfer.getPendingGames();
     }
 
+    /**
+     * alle games die gestart zijn ophalen
+     * @return
+     * @throws RemoteException
+     */
     public ArrayList<Game> getStartedGames() throws RemoteException {
         return dataTransfer.getActiveGames();
     }
 
+    /**
+     * game afsluiten
+     * @param game
+     * @param login
+     * @throws RemoteException
+     */
     @Override
     public void quitGame(Game game, String login) throws RemoteException {
         Game game2 = gameMap.get(game.getGameId());
@@ -285,6 +331,9 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
         }
     }
 
+    /**
+     * thema's met specifieke grootte binnenhalen
+     */
     @Override
     public List<String> getThemesWithSize(int size) throws RemoteException {
         System.out.println("Size is; " + size);
@@ -294,6 +343,10 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     }
 
 
+    /**
+     * verwittigen andere spelers dat een zet gebeurd is
+     * @param game
+     */
     private synchronized void notifyOtherPlayers(Game game) {
         //for (int i = 0; i < game.getCurrentplayer()+1; i++) {
         notifyAll();
@@ -302,11 +355,23 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     }
 
+    /**
+     * ophalen salt
+     * @param login
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public byte[] getSalt(String login) throws RemoteException {
         return dataTransfer.getSalt(login);
     }
 
+    /**
+     * ophalen thema volgens id
+     * @param themeId
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Theme getTheme(int themeId) throws RemoteException {
         Theme chosenTheme = null;
