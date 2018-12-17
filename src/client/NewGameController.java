@@ -122,6 +122,9 @@ public class NewGameController extends Controller {
                     }
 
                 } catch (RemoteException e1) {
+                    if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                     e1.printStackTrace();
                 }
 
@@ -131,6 +134,9 @@ public class NewGameController extends Controller {
             stage.setScene(scene);
             }
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -163,6 +169,9 @@ public class NewGameController extends Controller {
                 i++;
             }
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
     }
@@ -198,6 +207,9 @@ public class NewGameController extends Controller {
 
 
         } catch (IOException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
 
@@ -232,6 +244,11 @@ public class NewGameController extends Controller {
         try {
             themeNames=application.getThemesWithSize(8);
         } catch (RemoteException e) {
+            System.out.println(e.getCause());
+            System.out.println("application connection refused");
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
         choiceBox.setItems(FXCollections.observableArrayList(themeNames));
@@ -246,7 +263,9 @@ public class NewGameController extends Controller {
         try {
             themeNames=application.getThemesWithSize(8);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
         choiceBox.setItems(FXCollections.observableArrayList(themeNames));
         choiceBox.setValue(themeNames.get(0));
@@ -260,7 +279,9 @@ public class NewGameController extends Controller {
         try {
             themeNames=application.getThemesWithSize(18);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
         choiceBox.setItems(FXCollections.observableArrayList(themeNames));
         choiceBox.setValue(themeNames.get(0));
@@ -274,6 +295,9 @@ public class NewGameController extends Controller {
         try {
             themeNames=application.getThemesWithSize(32);
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
         choiceBox.setItems(FXCollections.observableArrayList(themeNames));
@@ -289,6 +313,9 @@ public class NewGameController extends Controller {
         try {
             themeNames = application.getThemeNames();
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
         /*themeList.add("Shiba's");

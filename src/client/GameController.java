@@ -51,7 +51,6 @@ public class GameController extends Controller {
     static int score = 0;
 
 
-
     @FXML
     private GridPane gridPane;
     @FXML
@@ -74,7 +73,7 @@ public class GameController extends Controller {
 
         System.out.println("size van het thema: " + theme.getSize());
 
-        if(theme==null || theme.getThemeId()!=game.getTheme()){
+        if (theme == null || theme.getThemeId() != game.getTheme()) {
             //Vraag thema op als dit niet gecacht was op de client
             theme = application.getTheme(game.getTheme());
         }
@@ -146,14 +145,16 @@ public class GameController extends Controller {
         gridPane.setPrefSize(imageSize * game.getCardMatrix().length, imageSize * game.getCardMatrix().length);
     }
 
-    public void setTheme(){
-        System.out.println("OUDE THEME ID: "+theme.getThemeId()+ " EN NIEUWE MOET ZIJN: "+game.getTheme());
-        if(game.getTheme()!=theme.getThemeId()){
+    public void setTheme() {
+        System.out.println("OUDE THEME ID: " + theme.getThemeId() + " EN NIEUWE MOET ZIJN: " + game.getTheme());
+        if (game.getTheme() != theme.getThemeId()) {
             try {
-                System.out.println("OUDE THEME ID: "+theme.getThemeId()+ " EN NIEUWE MOET ZIJN: "+game.getTheme());
+                System.out.println("OUDE THEME ID: " + theme.getThemeId() + " EN NIEUWE MOET ZIJN: " + game.getTheme());
                 application.getTheme(game.getTheme());
             } catch (RemoteException e) {
-                e.printStackTrace();
+                if (e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                    reconnect();
+                }
             }
         }
     }
@@ -162,18 +163,20 @@ public class GameController extends Controller {
         this.game = game;
 
         try {
-        if(this.theme!=null){
-            if(this.theme.getThemeId()!=game.getTheme()){
+            if (this.theme != null) {
+                if (this.theme.getThemeId() != game.getTheme()) {
 
                     application.getTheme(game.getTheme());
 
+                }
+            } else {
+                this.theme = application.getTheme(game.getTheme());
             }
-        }else{
-            this.theme = application.getTheme(game.getTheme());
-        }
 
         } catch (RemoteException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
         gamejudge.resetJudge();
 
@@ -210,13 +213,17 @@ public class GameController extends Controller {
                     }
 
                 } catch (RemoteException e1) {
-                    e1.printStackTrace();
+                    if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                 }
             });
             Scene scene = new Scene(pane);
             stage.setScene(scene);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -240,7 +247,9 @@ public class GameController extends Controller {
                 System.out.println("not your turn");
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
 
     }
@@ -487,7 +496,9 @@ public class GameController extends Controller {
                         game = application.gameChanged(game.getGameId());
                         System.out.println("signal get");
                     } catch (RemoteException e) {
-                        e.printStackTrace();
+                        if (e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                            reconnect();
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -523,7 +534,6 @@ public class GameController extends Controller {
             }
         }
     }
-
 
 
     public class FlipCard extends Transition {

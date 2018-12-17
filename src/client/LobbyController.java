@@ -101,7 +101,9 @@ public class LobbyController extends Controller{
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
 
 
@@ -141,7 +143,9 @@ public class LobbyController extends Controller{
             stage.setScene(scene);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
 
 
@@ -181,7 +185,10 @@ public class LobbyController extends Controller{
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
+            //e.printStackTrace();
         }
 
     }

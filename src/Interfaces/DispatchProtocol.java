@@ -13,7 +13,7 @@ public interface DispatchProtocol extends Remote {
 
     public ArrayList<Integer> registerDB() throws RemoteException;
 
-    public ArrayList<Integer> registerApp(int port) throws RemoteException;
+    public ArrayList<Integer> registerApp(int port, int databaseport) throws RemoteException;
 
     public void incrementGame(int port) throws RemoteException;
 

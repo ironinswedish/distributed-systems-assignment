@@ -14,6 +14,11 @@ import javafx.stage.Stage;
 import shared_objects.Person;
 
 import java.io.IOException;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
 public class Controller {
@@ -59,10 +64,10 @@ public class Controller {
     public String getLogin() {
         return this.login;
     }
+
     public void setLogin(String login) {
         this.login = login;
     }
-
 
 
     public AnchorPane getTransition(String fxml) throws IOException {
@@ -82,4 +87,20 @@ public class Controller {
         return pane;
     }
 
+
+    public static void reconnect() {
+        try {
+            String[] applicationAdress = dispatch.getApplicationServer();
+            Registry applicationServer = LocateRegistry.getRegistry(applicationAdress[0], Integer.parseInt(applicationAdress[1]));
+            System.out.println(applicationAdress[1]);
+            System.out.println(applicationAdress[0]);
+            application = (ApplicationProtocol) applicationServer.lookup("applicationService");
+        } catch (AccessException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
 }

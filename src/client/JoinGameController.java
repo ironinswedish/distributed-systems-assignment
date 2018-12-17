@@ -37,7 +37,7 @@ public class JoinGameController extends Controller {
 
     public void initialize() {
         refreshListView();
-
+        System.out.println("list refreshed");
     }
 
     private class HBoxCell extends HBox {
@@ -92,7 +92,9 @@ public class JoinGameController extends Controller {
                             }
 
                         } catch (RemoteException e1) {
-                            e1.printStackTrace();
+                            if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                                reconnect();
+                            }
                         }
 
                     });
@@ -100,7 +102,9 @@ public class JoinGameController extends Controller {
                     stage.setScene(scene);
                     }
                 } catch (RemoteException e2) {
-                    e2.printStackTrace();
+                    if(e2.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                 } catch (IOException e2) {
                     e2.printStackTrace();
                 } catch (NotBoundException e1) {
@@ -172,14 +176,18 @@ public class JoinGameController extends Controller {
             Game tempGame;
             for (int i = pendingGameList.size()-1; i> -1; i--) {
                 tempGame = pendingGameList.get(i);
+                System.out.println(tempGame.getApplicatieServer());
                 String[] splitServerName = tempGame.getApplicatieServer().split("-");
+                System.out.println(splitServerName[0]+" "+splitServerName[1]);
                 gameList.add(new HBoxCell("players: " + (tempGame.getCurrentplayer()+1) + "/" + tempGame.getPlayerCount() + " ", tempGame.getGameId(),Integer.parseInt(splitServerName[1])));
             }
 
             ObservableList<HBoxCell> myObservableList = FXCollections.observableList(gameList);
             listView.setItems(myObservableList);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
         }
     }
 

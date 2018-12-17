@@ -3,7 +3,9 @@ package shared_objects;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Person {
+import java.io.Serializable;
+
+public class Person implements Serializable {
 
     SimpleIntegerProperty score;
     SimpleStringProperty name;

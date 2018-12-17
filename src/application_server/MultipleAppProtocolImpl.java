@@ -41,7 +41,6 @@ public class MultipleAppProtocolImpl extends UnicastRemoteObject implements Mult
         applicationServer = new String[2];
         applicationServer[0] = "";
         applicationServer[1] = "";
-        boolean bound = false;
         try {
 
            /* String[] serviceList = registry.list();
@@ -58,7 +57,7 @@ public class MultipleAppProtocolImpl extends UnicastRemoteObject implements Mult
                 if (!onlinePorts.contains(port)) {
                     System.out.println("port = " + port);
                     registry = LocateRegistry.createRegistry(port);
-                    registry.rebind("applicationService", new ApplicationProtocolImpl(dispatchProtocol.registerApp(port),databasePort));
+                    registry.rebind("applicationService", new ApplicationProtocolImpl(dispatchProtocol.registerApp(port,databasePort),databasePort));
                     onlinePorts.add(port);
                     appserverMap.put(port, registry);
                 } else {

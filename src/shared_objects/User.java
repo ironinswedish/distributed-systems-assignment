@@ -1,6 +1,8 @@
 package shared_objects;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 
     private String login;
     private String paswoord;

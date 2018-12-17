@@ -77,5 +77,5 @@ public interface DataBaseProtocol extends Remote {
 
     void initialSetup() throws RemoteException;
 
-
+    void updateDBList(ArrayList<Integer> dblist) throws RemoteException;
 }

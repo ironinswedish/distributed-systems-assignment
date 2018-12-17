@@ -105,12 +105,11 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     @Override
     public ArrayList<Theme> getPreviewThemes() throws RemoteException {
-        if(cachedPreviews.isEmpty()){
-        ArrayList<Theme> t= dataTransfer.getPreviewThemes();
-        cachedPreviews=t;
-        return t;
-        }
-        else{
+        if (cachedPreviews.isEmpty()) {
+            ArrayList<Theme> t = dataTransfer.getPreviewThemes();
+            cachedPreviews = t;
+            return t;
+        } else {
             return cachedPreviews;
         }
     }
@@ -143,7 +142,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
 
         Game game = new Game(playerTotal, gridTotal, login, chosenTheme.getThemeId(), chosenTheme.getSize());
-        game = dataTransfer.createGame(game, "server-"+ownPort, login, session);
+        game = dataTransfer.createGame(game, "server-" + ownPort, login, session);
         if (game == null) {
             System.out.println("deze game is null");
             return null;
@@ -158,6 +157,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * verwerken zet
+     *
      * @param lastMove
      * @param login
      * @param gameId
@@ -188,25 +188,27 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
             if (game.checkFinished()) {
                 game.setStatus("finished");
-                game.calculateEndResults();
-                System.out.println("losers");
-                for (String loser : game.getLosers()) {
-                    game.getEndResult().put(loser, "lose");
-                    System.out.println(loser);
-                    dataTransfer.addLoss(loser);
-                }
-                System.out.println("winners");
-                if (game.getWinners().size() > 1) {
-                    for (String winner : game.getWinners()) {
-                        game.getEndResult().put(winner, "draw");
-                        System.out.println(winner);
-                        dataTransfer.addDraw(winner);
+                if (game.getPlayerCount() > 1) {
+                    game.calculateEndResults();
+                    System.out.println("losers");
+                    for (String loser : game.getLosers()) {
+                        game.getEndResult().put(loser, "lose");
+                        System.out.println(loser);
+                        dataTransfer.addLoss(loser);
                     }
-                } else {
-                    game.getEndResult().put(game.getWinners().get(0), "win");
-                    System.out.println(game.getWinners().get(0));
+                    System.out.println("winners");
+                    if (game.getWinners().size() > 1) {
+                        for (String winner : game.getWinners()) {
+                            game.getEndResult().put(winner, "draw");
+                            System.out.println(winner);
+                            dataTransfer.addDraw(winner);
+                        }
+                    } else {
+                        game.getEndResult().put(game.getWinners().get(0), "win");
+                        System.out.println(game.getWinners().get(0));
 
-                    dataTransfer.addWin(game.getWinners().get(0));
+                        dataTransfer.addWin(game.getWinners().get(0));
+                    }
                 }
                 dataTransfer.updateGame(game);
                 dispatchProtocol.decreaseGame(ownPort, databaseport);
@@ -222,6 +224,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * blocking methode die controleert of een game gewijzigd is en vervolgens een signaal stuurt
+     *
      * @param gameId
      * @return
      * @throws RemoteException
@@ -250,6 +253,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * client met game laten meespelen
+     *
      * @param gameId
      * @param login
      * @param session
@@ -277,6 +281,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * client laten meekijken met game
+     *
      * @param gameId
      * @param login
      * @return
@@ -295,6 +300,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * alle games die extra spelers nodig hebben ophalen
+     *
      * @return
      * @throws RemoteException
      */
@@ -305,6 +311,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * alle games die gestart zijn ophalen
+     *
      * @return
      * @throws RemoteException
      */
@@ -314,6 +321,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * game afsluiten
+     *
      * @param game
      * @param login
      * @throws RemoteException
@@ -321,13 +329,14 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
     @Override
     public void quitGame(Game game, String login) throws RemoteException {
         Game game2 = gameMap.get(game.getGameId());
-        if(game2!=null) {
+        if (game2 != null) {
             game2.removeUser(login);
-
+            if (game2.getStatus().equals("finished")) {
+                dispatchProtocol.decreaseGame(ownPort, databaseport);
+            }
             dataTransfer.updateGame(game2);
             dataTransfer.addLoss(login);
             notifyOtherPlayers(game2);
-
         }
     }
 
@@ -345,6 +354,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * verwittigen andere spelers dat een zet gebeurd is
+     *
      * @param game
      */
     private synchronized void notifyOtherPlayers(Game game) {
@@ -357,6 +367,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * ophalen salt
+     *
      * @param login
      * @return
      * @throws RemoteException
@@ -368,6 +379,7 @@ public class ApplicationProtocolImpl extends UnicastRemoteObject implements Appl
 
     /**
      * ophalen thema volgens id
+     *
      * @param themeId
      * @return
      * @throws RemoteException

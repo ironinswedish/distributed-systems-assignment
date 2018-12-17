@@ -111,6 +111,9 @@ public class RegisterController extends Controller{
                 messageLabel.setText("Something went wrong.");
             }
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
     }
@@ -140,6 +143,9 @@ public class RegisterController extends Controller{
                     }
 
                 } catch (RemoteException e1) {
+                    if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                     e1.printStackTrace();
                 }
             });
@@ -147,6 +153,9 @@ public class RegisterController extends Controller{
             stage.setScene(scene);
 
         } catch (IOException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
 
@@ -178,6 +187,9 @@ public class RegisterController extends Controller{
                     }
 
                 } catch (RemoteException e1) {
+                    if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                     e1.printStackTrace();
                 }
             });
@@ -185,6 +197,9 @@ public class RegisterController extends Controller{
             stage.setScene(scene);
 
         } catch (IOException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
 

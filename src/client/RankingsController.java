@@ -50,6 +50,9 @@ public class RankingsController  extends Controller implements Initializable {
                     }
 
                 } catch (RemoteException e1) {
+                    if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                     e1.printStackTrace();
                 }
             });
@@ -57,6 +60,9 @@ public class RankingsController  extends Controller implements Initializable {
             stage.setScene(scene);
 
         } catch (IOException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
     }
@@ -88,6 +94,9 @@ public class RankingsController  extends Controller implements Initializable {
 
 
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
 

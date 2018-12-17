@@ -87,6 +87,9 @@ public class SpectateController extends Controller {
                             }
 
                         } catch (RemoteException e1) {
+                            if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                                reconnect();
+                            }
                             e1.printStackTrace();
                         }
 
@@ -95,6 +98,9 @@ public class SpectateController extends Controller {
                     stage.setScene(scene);
 
                 } catch (RemoteException e2) {
+                    if(e2.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                     e2.printStackTrace();
                 } catch (IOException e2) {
                     e2.printStackTrace();
@@ -137,6 +143,9 @@ public class SpectateController extends Controller {
             ObservableList<HBoxCell> myObservableList = FXCollections.observableList(gameList);
             listView.setItems(myObservableList);
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
     }

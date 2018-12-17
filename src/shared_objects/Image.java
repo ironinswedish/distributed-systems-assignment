@@ -1,6 +1,8 @@
 package shared_objects;
 
-public class Image {
+import java.io.Serializable;
+
+public class Image implements Serializable {
     public int id;
     public byte[] image;
 

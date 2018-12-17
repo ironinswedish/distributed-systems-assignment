@@ -3,9 +3,11 @@ package dispatcher;
 
 
 import Interfaces.ApplicationProtocol;
+import Interfaces.DataBaseProtocol;
 import Interfaces.DispatchProtocol;
 import Interfaces.MultipleAppProtocol;
 
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -24,6 +26,7 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
     static int startDBPort = 14000;
     static int startAppPort = 1499;
     static MultipleAppProtocol multiApp;
+    static HashMap<Integer, DataBaseProtocol> databaseAccesMap = new HashMap<>();
 
     public DispatchProtocolImpl() throws RemoteException {}
 
@@ -43,12 +46,11 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
             multiApp = (MultipleAppProtocol) appServer.lookup("multipleAppService");
 
             int port = getBestApp();
-            System.out.println("port = " + port);
+            System.out.println("appport = " + port);
             int databaseport = getBestDB();
+            System.out.println("dbport = "+databaseport);
             applicationServer = multiApp.addUser(port,databaseport);
-            int currentcount = appToDBCount.get(databaseport);
-            currentcount++;
-            appToDBCount.replace(databaseport, currentcount);
+
 
 
 
@@ -86,6 +88,9 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         dblist.add(startDBPort);
         appToDBCount.put(startDBPort, 0);
         startDBPort++;
+        if(dblist.size()>1) {
+            updateDataBases();
+        }
         return dblist;
     }
 
@@ -95,9 +100,12 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
      * @return
      */
     @Override
-    public ArrayList<Integer> registerApp(int port){
+    public ArrayList<Integer> registerApp(int port,int databaseport){
         applicationlist.add(port);
         gameCount.put(port, 0);
+        int currentcount = appToDBCount.get(databaseport);
+        currentcount++;
+        appToDBCount.replace(databaseport, currentcount);
         return applicationlist;
     }
 
@@ -110,6 +118,7 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
         int currentcount = gameCount.get(appPort);
         currentcount++;
         gameCount.replace(appPort, currentcount);
+        System.out.println("game increased"+appPort);
     }
 
     /**
@@ -132,6 +141,7 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
                 e.printStackTrace();
             }
         }
+        System.out.println("game decreased"+appPort);
     }
 
     /**
@@ -171,5 +181,30 @@ public class DispatchProtocolImpl extends UnicastRemoteObject implements Dispatc
                 }
         }
         return port;
+    }
+
+    private void updateDataBases(){
+
+        DataBaseProtocol dataProt;
+        Registry registry;
+        for (Integer port : dblist) {
+            if (port != dblist.get(dblist.size() - 1)) {
+                try {
+                    dataProt = databaseAccesMap.get(port);
+                    if (dataProt == null) {
+                        registry = LocateRegistry.getRegistry("localhost", port);
+                        databaseAccesMap.put(port, (DataBaseProtocol) registry.lookup("dataBaseService"));
+
+                    }
+                    databaseAccesMap.get(port).updateDBList(dblist);
+                } catch (AccessException e) {
+                    e.printStackTrace();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (NotBoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

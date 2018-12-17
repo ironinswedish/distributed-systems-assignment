@@ -65,6 +65,9 @@ public class UserSettingsController extends Controller {
             result = application.changeUsername(usernameField.getText(),login,session);
             System.out.println("Going into change username with: "+usernameField.getText()+ " and  "+login);
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
         if(result==-1){
@@ -122,6 +125,9 @@ public class UserSettingsController extends Controller {
             result = application.changePassword(hashedPassword,login,session);
             System.out.println("Going into change password with: "+passwordField.getText()+ " and  "+login);
         } catch (RemoteException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
 
@@ -161,6 +167,9 @@ public class UserSettingsController extends Controller {
                     }
 
                 } catch (RemoteException e1) {
+                    if(e1.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                        reconnect();
+                    }
                     e1.printStackTrace();
                 }
             });
@@ -168,6 +177,9 @@ public class UserSettingsController extends Controller {
             stage.setScene(scene);
 
         } catch (IOException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
     }
@@ -204,6 +216,9 @@ public class UserSettingsController extends Controller {
 
 
         } catch (IOException e) {
+            if(e.getCause().toString().equals("java.net.ConnectException: Connection refused: connect")) {
+                reconnect();
+            }
             e.printStackTrace();
         }
 
